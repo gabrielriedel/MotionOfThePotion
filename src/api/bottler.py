@@ -30,8 +30,8 @@ def post_deliver_bottles(potions_delivered: list[PotionInventory], order_id: int
         new_green_potions += potion.quantity
     
     with db.engine.begin() as connection:
-        connection.execute(sqlalchemy.text("UPDATE global_inventory SET num_green_ml = new_green_ml"))
-        connection.execute(sqlalchemy.text("UPDATE global_inventory SET num_green_motions = new_green_potions"))
+        connection.execute(sqlalchemy.text("UPDATE global_inventory SET num_green_ml = :x").bindparams(x=new_green_ml))
+        connection.execute(sqlalchemy.text("UPDATE global_inventory SET num_green_potions = :x").bindparams(x=new_green_potions))
 
     return "OK"
 
