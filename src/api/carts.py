@@ -113,4 +113,4 @@ def checkout(cart_id: int, cart_checkout: CartCheckout):
         connection.execute(sqlalchemy.text("UPDATE global_inventory SET num_green_potions = :x").bindparams(x=0))
         connection.execute(sqlalchemy.text("UPDATE global_inventory SET gold = :x").bindparams(x=gold+int(cart_checkout.payment)))
 
-    return {"total_potions_bought": num_potions, "total_gold_paid": int(cart_checkout.payment)}
+    return {"total_potions_bought": num_potions, "total_gold_paid": cart_checkout.payment}
