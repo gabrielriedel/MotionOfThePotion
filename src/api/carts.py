@@ -90,7 +90,7 @@ def create_cart(new_cart: Customer):
     """ """
     global global_cart_id
     global_cart_id += 1
-    return {"cart_id": 1}
+    return {"cart_id": global_cart_id}
 
 
 class CartItem(BaseModel):
