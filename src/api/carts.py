@@ -117,7 +117,7 @@ def checkout(cart_id: int, cart_checkout: CartCheckout):
         num_green_potions = connection.execute(sqlalchemy.text("SELECT num_green_potions FROM global_inventory")).scalar_one()
         num_blue_potions = connection.execute(sqlalchemy.text("SELECT num_blue_potions FROM global_inventory")).scalar_one()
         if carts[cart_id][0] == "RED_POTION_0":
-            gold += 50*carts[cart_id](1)
+            gold += 50*carts[cart_id][1]
             num_red_potions -= carts[cart_id][1]
         if carts[cart_id][0] == "GREEN_POTION_0":
             gold += 50*carts[cart_id][1]
