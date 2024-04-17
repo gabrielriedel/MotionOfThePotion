@@ -30,13 +30,13 @@ def post_deliver_bottles(potions_delivered: list[PotionInventory], order_id: int
         new_blue_potions = connection.execute(sqlalchemy.text("SELECT num_blue_potions FROM global_inventory")).scalar_one()
 
     for potion in potions_delivered:
-        if potion.potion_type == [100,0,0,0]:
+        if potion.potion_type == [1,0,0,0]:
             new_red_ml -= 100*potion.quantity
             new_red_potions += potion.quantity
-        if potion.potion_type == [0,100,0,0]:
+        if potion.potion_type == [0,1,0,0]:
             new_green_ml -= 100*potion.quantity
             new_green_potions += potion.quantity
-        if potion.potion_type == [0,0,100,0]:
+        if potion.potion_type == [0,0,1,0]:
             new_blue_ml -= 100*potion.quantity
             new_blue_potions += potion.quantity
     
