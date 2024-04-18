@@ -117,14 +117,14 @@ def checkout(cart_id: int, cart_checkout: CartCheckout):
         num_green_potions = connection.execute(sqlalchemy.text("SELECT num_green_potions FROM global_inventory")).scalar_one()
         num_blue_potions = connection.execute(sqlalchemy.text("SELECT num_blue_potions FROM global_inventory")).scalar_one()
         if carts[cart_id][0] == "RED_POTION_0":
-            gold += 50*carts[cart_id][1]
+            gold += 30*carts[cart_id][1]
             num_red_potions -= carts[cart_id][1]
         if carts[cart_id][0] == "GREEN_POTION_0":
-            gold += 50*carts[cart_id][1]
+            gold += 30*carts[cart_id][1]
             num_green_potions -= carts[cart_id][1]
         
         if carts[cart_id][0] == "BLUE_POTION_0":
-            gold += 50*carts[cart_id][1]
+            gold += 30*carts[cart_id][1]
             num_blue_potions -= carts[cart_id][1]
         
         connection.execute(sqlalchemy.text("UPDATE global_inventory SET num_red_potions = :x").bindparams(x=num_red_potions))
@@ -132,4 +132,4 @@ def checkout(cart_id: int, cart_checkout: CartCheckout):
         connection.execute(sqlalchemy.text("UPDATE global_inventory SET num_blue_potions = :x").bindparams(x=num_blue_potions))
         connection.execute(sqlalchemy.text("UPDATE global_inventory SET gold = :x").bindparams(x=gold))
 
-    return {"total_potions_bought": carts[cart_id][1], "total_gold_paid": 50*carts[cart_id][1]}
+    return {"total_potions_bought": carts[cart_id][1], "total_gold_paid": 30*carts[cart_id][1]}
