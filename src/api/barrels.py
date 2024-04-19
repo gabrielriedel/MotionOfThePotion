@@ -34,14 +34,14 @@ def post_deliver_barrels(barrels_delivered: list[Barrel], order_id: int):
         new_gold = connection.execute(sqlalchemy.text("SELECT gold FROM global_inventory")).scalar_one()
 
     for barrel in barrels_delivered:
-        if barrel.potion_type == [1,0,0,0]:
-            new_red_ml += barrel.ml_per_barrel*barrel.quantity
-            new_gold -= barrel.price*barrel.quantity
-        elif barrel.potion_type == [0,1,0,0]:
+        if barrel.potion_type == [0,1,0,0]:
             new_green_ml += barrel.ml_per_barrel*barrel.quantity
             new_gold -= barrel.price*barrel.quantity
         elif barrel.potion_type == [0,0,1,0]:
             new_blue_ml += barrel.ml_per_barrel*barrel.quantity
+            new_gold -= barrel.price*barrel.quantity
+        elif barrel.potion_type == [1,0,0,0]:
+            new_red_ml += barrel.ml_per_barrel*barrel.quantity
             new_gold -= barrel.price*barrel.quantity
         else:
             raise Exception("Invalid Potion Type")
