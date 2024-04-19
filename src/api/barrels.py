@@ -68,13 +68,6 @@ def get_wholesale_purchase_plan(wholesale_catalog: list[Barrel]):
         gold = connection.execute(sqlalchemy.text("SELECT gold FROM global_inventory")).scalar_one()
 
     for barrel in wholesale_catalog:
-        if barrel.sku == "MEDIUM_RED_BARREL" and num_red_potions < 5 and barrel.price <= gold:
-            return [
-        {
-            "sku": "MEDIUM_RED_BARREL",
-            "quantity": 1,
-        }
-            ]
         if barrel.sku == "MEDIUM_GREEN_BARREL" and num_green_potions < 5 and barrel.price <= gold:
             return [
             {
@@ -86,6 +79,13 @@ def get_wholesale_purchase_plan(wholesale_catalog: list[Barrel]):
             return [
         {
             "sku": "MEDIUM_BLUE_BARREL",
+            "quantity": 1,
+        }
+            ]
+        if barrel.sku == "MEDIUM_RED_BARREL" and num_red_potions < 5 and barrel.price <= gold:
+            return [
+        {
+            "sku": "MEDIUM_RED_BARREL",
             "quantity": 1,
         }
             ]
