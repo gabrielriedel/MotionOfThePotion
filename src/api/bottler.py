@@ -70,18 +70,19 @@ def get_bottle_plan():
     green_bottle_quant = num_green_ml//100
     blue_bottle_quant = num_blue_ml//100
 
-    if red_bottle_quant > 0:
-        return [
-                {
-                    "potion_type": [100, 0, 0, 0],
-                 "quantity": red_bottle_quant,
-                }
-         ]
     if green_bottle_quant > 0:
         return [
                 {
                     "potion_type": [0, 100, 0, 0],
                  "quantity": green_bottle_quant,
+                }
+         ]
+
+    if red_bottle_quant > 0:
+        return [
+                {
+                    "potion_type": [100, 0, 0, 0],
+                 "quantity": red_bottle_quant,
                 }
          ]
     if blue_bottle_quant > 0:
