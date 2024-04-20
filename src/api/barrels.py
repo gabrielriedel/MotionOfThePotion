@@ -82,13 +82,13 @@ def get_wholesale_purchase_plan(wholesale_catalog: list[Barrel]):
             "quantity": 1,
         }
             ]
-        if barrel.sku == "MEDIUM_RED_BARREL" and num_red_potions < 5 and barrel.price <= gold:
-            return [
-        {
-            "sku": "MEDIUM_RED_BARREL",
-            "quantity": 1,
-        }
-            ]
+        # if barrel.sku == "MEDIUM_RED_BARREL" and num_red_potions < 5 and barrel.price <= gold:
+        #     return [
+        # {
+        #     "sku": "MEDIUM_RED_BARREL",
+        #     "quantity": 1,
+        # }
+        #     ]
         
     return []
     
