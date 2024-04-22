@@ -65,31 +65,93 @@ def get_bottle_plan():
         num_red_ml = connection.execute(sqlalchemy.text("SELECT num_red_ml FROM global_inventory")).scalar_one()
         num_green_ml = connection.execute(sqlalchemy.text("SELECT num_green_ml FROM global_inventory")).scalar_one()
         num_blue_ml = connection.execute(sqlalchemy.text("SELECT num_blue_ml FROM global_inventory")).scalar_one()
+        num_dark_ml = connection.execute(sqlalchemy.text("SELECT num_dark_ml FROM global_inventory")).scalar_one()
 
-    red_bottle_quant = num_red_ml//100
-    green_bottle_quant = num_green_ml//100
-    blue_bottle_quant = num_blue_ml//100
 
-    if green_bottle_quant > 0:
+    if num_red_ml > 50 and num_green_ml > 50:
+        quant = min(num_red_ml//50, num_green_ml//50)
         return [
                 {
-                    "potion_type": [0, 100, 0, 0],
-                 "quantity": green_bottle_quant,
+                    "potion_type": [50, 50, 0, 0],
+                 "quantity": quant,
+                }
+         ]
+    if num_red_ml > 50 and num_blue_ml > 50:
+        quant = min(num_red_ml//50, num_blue_ml//50)
+        return [
+                {
+                    "potion_type": [50, 0, 50, 0],
+                 "quantity": quant,
+                }
+         ]
+    if num_red_ml > 50 and num_dark_ml > 50:
+        quant = min(num_red_ml//50, num_dark_ml//50)
+        return [
+                {
+                    "potion_type": [50, 0, 0, 50],
+                 "quantity": quant,
+                }
+         ]
+    if num_green_ml > 50 and num_blue_ml > 50:
+        quant = min(num_green_ml//50, num_blue_ml//50)
+        return [
+                {
+                    "potion_type": [0, 50, 50, 0],
+                 "quantity": quant,
+                }
+         ]
+    if num_green_ml > 50 and num_dark_ml > 50:
+        quant = min(num_green_ml//50, num_dark_ml//50)
+        return [
+                {
+                    "potion_type": [0, 50, 0, 50],
+                 "quantity": quant,
+                }
+         ]
+    if num_blue_ml > 50 and num_dark_ml > 50:
+        quant = min(num_blue_ml//50, num_dark_ml//50)
+        return [
+                {
+                    "potion_type": [0, 0, 50, 50],
+                 "quantity": quant,
+                }
+         ]
+    if num_red_ml > 25 and num_green_ml > 25 and num_blue_ml > 25 and num_dark_ml > 25:
+        quant = min(num_green_ml//25, num_red_ml//25, num_blue_ml//25, num_dark_ml//25)
+        return [
+                {
+                    "potion_type": [25, 25, 25, 25],
+                 "quantity": quant,
                 }
          ]
 
-    if red_bottle_quant > 0:
+    if num_red_ml > 100:
         return [
                 {
                     "potion_type": [100, 0, 0, 0],
-                 "quantity": red_bottle_quant,
+                 "quantity": num_red_ml//100,
                 }
          ]
-    if blue_bottle_quant > 0:
+
+    if num_green_ml > 100:
+        return [
+                {
+                    "potion_type": [0, 100, 0, 0],
+                 "quantity": num_green_ml//100,
+                }
+         ]
+    if num_blue_ml > 100:
         return [
                 {
                     "potion_type": [0, 0, 100, 0],
-                 "quantity": blue_bottle_quant,
+                 "quantity": num_blue_ml//100,
+                }
+         ]
+    if num_dark_ml > 100:
+        return [
+                {
+                    "potion_type": [0, 0, 0, 100],
+                 "quantity": num_dark_ml//100,
                 }
          ]
     

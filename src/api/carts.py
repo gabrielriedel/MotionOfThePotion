@@ -91,6 +91,8 @@ def create_cart(new_cart: Customer):
     """ """
     global global_cart_id
     global_cart_id += 1
+    # Add Customer info to new row in carts table
+    # Return the id of that row
     return {"cart_id": global_cart_id}
 
 
@@ -102,6 +104,7 @@ class CartItem(BaseModel):
 def set_item_quantity(cart_id: int, item_sku: str, cart_item: CartItem):
     """ """
     carts[cart_id] = (item_sku, cart_item.quantity)
+    # Add cart item info to a new row with respect to foreign keys of cart_id and item_sku
     return "OK"
 
 #
@@ -111,11 +114,13 @@ class CartCheckout(BaseModel):
 @router.post("/{cart_id}/checkout")
 def checkout(cart_id: int, cart_checkout: CartCheckout):
     """ """
+    # Use the info between tables to write an efficient checkout process (quantity, cost, )
     with db.engine.begin() as connection:
         gold = connection.execute(sqlalchemy.text("SELECT gold FROM global_inventory")).scalar_one()
         num_red_potions = connection.execute(sqlalchemy.text("SELECT num_red_potions FROM global_inventory")).scalar_one()
         num_green_potions = connection.execute(sqlalchemy.text("SELECT num_green_potions FROM global_inventory")).scalar_one()
         num_blue_potions = connection.execute(sqlalchemy.text("SELECT num_blue_potions FROM global_inventory")).scalar_one()
+        num_dark_potions = connection.execute(sqlalchemy.text("SELECT num_dark_potions FROM global_inventory")).scalar_one()
         if carts[cart_id][0] == "RED_POTION_0":
             gold += 30*carts[cart_id][1]
             num_red_potions -= carts[cart_id][1]
@@ -126,10 +131,17 @@ def checkout(cart_id: int, cart_checkout: CartCheckout):
         if carts[cart_id][0] == "BLUE_POTION_0":
             gold += 30*carts[cart_id][1]
             num_blue_potions -= carts[cart_id][1]
+
+        if carts[cart_id][0] == "DARK_POTION_0":
+            gold += 30*carts[cart_id][1]
+            num_dark_potions -= carts[cart_id][1]
+        else:
+            raise Exception("Invalid Transaction")
         
         connection.execute(sqlalchemy.text("UPDATE global_inventory SET num_red_potions = :x").bindparams(x=num_red_potions))
         connection.execute(sqlalchemy.text("UPDATE global_inventory SET num_green_potions = :x").bindparams(x=num_green_potions))
         connection.execute(sqlalchemy.text("UPDATE global_inventory SET num_blue_potions = :x").bindparams(x=num_blue_potions))
+        connection.execute(sqlalchemy.text("UPDATE global_inventory SET num_dark_potions = :x").bindparams(x=num_dark_potions))
         connection.execute(sqlalchemy.text("UPDATE global_inventory SET gold = :x").bindparams(x=gold))
 
     return {"total_potions_bought": carts[cart_id][1], "total_gold_paid": 30*carts[cart_id][1]}
