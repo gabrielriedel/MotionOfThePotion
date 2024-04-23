@@ -111,7 +111,6 @@ def get_bottle_plan():
         green_quant = num_green_ml//50
         blue_quant = num_blue_ml//50
         dark_quant = num_dark_ml//50
-        print(red_quant)
         if num_red_ml >= row.type[0] and num_green_ml >= row.type[1] and num_blue_ml >= row.type[2] and num_dark_ml >= row.type[3]:
             print("HI")
             if row.id == 4:
