@@ -34,32 +34,34 @@ def post_deliver_barrels(barrels_delivered: list[Barrel], order_id: int):
                                                      num_blue_ml, 
                                                      num_dark_ml, 
                                                      gold 
-                                                     FROM global_inventory""")).fetchall()[0]
+                                                     FROM global_inventory""")).fetchone()
+    
+    inventory_data = list(results)
 
     for barrel in barrels_delivered:
         if barrel.potion_type == [1,0,0,0]:
-            results[0] += barrel.ml_per_barrel*barrel.quantity
-            results[4] -= barrel.price*barrel.quantity
+            inventory_data[0] += barrel.ml_per_barrel*barrel.quantity
+            inventory_data[4] -= barrel.price*barrel.quantity
         elif barrel.potion_type == [0,1,0,0]:
-            results[1] += barrel.ml_per_barrel*barrel.quantity
-            results[4] -= barrel.price*barrel.quantity
+            inventory_data[1] += barrel.ml_per_barrel*barrel.quantity
+            inventory_data[4] -= barrel.price*barrel.quantity
         elif barrel.potion_type == [0,0,1,0]:
-            results[2] += barrel.ml_per_barrel*barrel.quantity
-            results[4] -= barrel.price*barrel.quantity
+            inventory_data[2] += barrel.ml_per_barrel*barrel.quantity
+            inventory_data[4] -= barrel.price*barrel.quantity
         elif barrel.potion_type == [0,0,0,1]:
-            results[3] += barrel.ml_per_barrel*barrel.quantity
-            results[4] -= barrel.price*barrel.quantity
+            inventory_data[3] += barrel.ml_per_barrel*barrel.quantity
+            inventory_data[4] -= barrel.price*barrel.quantity
         else:
             raise Exception("Invalid Potion Type")
     
     # .text(""),[{"red_ml": red_ml, "green_ml": }]
 
     with db.engine.begin() as connection:
-        connection.execute(sqlalchemy.text("UPDATE global_inventory SET num_red_ml = :x"),[{"x": results[0]}])
-        connection.execute(sqlalchemy.text("UPDATE global_inventory SET num_green_ml = :x"),[{"x": results[1]}])
-        connection.execute(sqlalchemy.text("UPDATE global_inventory SET num_blue_ml = :x"),[{"x": results[2]}])
-        connection.execute(sqlalchemy.text("UPDATE global_inventory SET num_dark_ml = :x"),[{"x": results[3]}])
-        connection.execute(sqlalchemy.text("UPDATE global_inventory SET gold = :x"),[{"x": results[4]}])
+        connection.execute(sqlalchemy.text("UPDATE global_inventory SET num_red_ml = :x"),[{"x": inventory_data[0]}])
+        connection.execute(sqlalchemy.text("UPDATE global_inventory SET num_green_ml = :x"),[{"x": inventory_data[1]}])
+        connection.execute(sqlalchemy.text("UPDATE global_inventory SET num_blue_ml = :x"),[{"x": inventory_data[2]}])
+        connection.execute(sqlalchemy.text("UPDATE global_inventory SET num_dark_ml = :x"),[{"x": inventory_data[3]}])
+        connection.execute(sqlalchemy.text("UPDATE global_inventory SET gold = :x"),[{"x": inventory_data[4]}])
 
     return "OK"
 
@@ -76,33 +78,34 @@ def get_wholesale_purchase_plan(wholesale_catalog: list[Barrel]):
                                                      num_blue_potions, 
                                                      num_dark_potions, 
                                                      gold 
-                                                     FROM global_inventory""")).fetchall()[0]
+                                                     FROM global_inventory""")).fetchone()
+    inventory_data = list(results)
     for barrel in wholesale_catalog:
-        if barrel.sku == "SMALL_RED_BARREL" and results[0] < 10 and barrel.price <= results[4]:
+        if barrel.sku == "SMALL_RED_BARREL" and inventory_data[0] < 10 and barrel.price <= inventory_data[4]:
             order.append({
             "sku": "SMALL_RED_BARREL",
             "quantity": 1,
             })  
-            results[4] -= barrel.price
-        if barrel.sku == "SMALL_GREEN_BARREL" and results[1] < 10 and barrel.price <= results[4]:
+            inventory_data[4] -= barrel.price
+        if barrel.sku == "SMALL_GREEN_BARREL" and inventory_data[1] < 10 and barrel.price <= inventory_data[4]:
             order.append({
             "sku": "SMALL_GREEN_BARREL",
             "quantity": 1,
             })  
-            results[4] -= barrel.price
+            inventory_data[4] -= barrel.price
                     
-        if barrel.sku == "SMALL_BLUE_BARREL" and results[2] < 10 and barrel.price <= results[4]:
+        if barrel.sku == "SMALL_BLUE_BARREL" and inventory_data[2] < 10 and barrel.price <= inventory_data[4]:
             order.append({
             "sku": "SMALL_BLUE_BARREL",
             "quantity": 1,
             })  
-            results[4] -= barrel.price
-        if barrel.sku == "SMALL_DARK_BARREL" and results[3] < 10 and barrel.price <= results[4]:
+            inventory_data[4] -= barrel.price
+        if barrel.sku == "SMALL_DARK_BARREL" and inventory_data[3] < 10 and barrel.price <= inventory_data[4]:
             order.append({
             "sku": "SMALL_DARK_BARREL",
             "quantity": 1,
             })  
-            results[4] -= barrel.price
+            inventory_data[4] -= barrel.price
         
         
     return order
