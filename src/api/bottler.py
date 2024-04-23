@@ -29,45 +29,58 @@ def post_deliver_bottles(potions_delivered: list[PotionInventory], order_id: int
         num_dark_ml = connection.execute(sqlalchemy.text("SELECT num_dark_ml FROM global_inventory")).scalar_one()
 
     for potion in potions_delivered:
+        if potion.potion_type == [100,0,0,0]:
+            with db.engine.begin() as connection:
+                connection.execute(sqlalchemy.text("UPDATE global_inventory SET num_red_ml = :x"),[{"x": num_red_ml-100*potion.quantity}])
+                num_red_potions = connection.execute(sqlalchemy.text("SELECT num_red_potions FROM global_inventory")).scalar_one()
+                connection.execute(sqlalchemy.text("UPDATE global_inventory SET num_red_potions = :x"),[{"x": potion.quantity+num_red_potions}])
+                connection.execute(sqlalchemy.text("""UPDATE potions SET inventory = :x
+                                                   WHERE potions.type = :y"""),[{"x": potion.quantity+num_red_potions, "y": potion.potion_type}])
         if potion.potion_type == [50,50,0,0]:
             with db.engine.begin() as connection:
                 connection.execute(sqlalchemy.text("UPDATE global_inventory SET num_red_ml = :x"),[{"x": num_red_ml-50*potion.quantity}])
                 connection.execute(sqlalchemy.text("UPDATE global_inventory SET num_green_ml = :x"),[{"x": num_green_ml-50*potion.quantity}])
+                num_potions = connection.execute(sqlalchemy.text("SELECT inventory FROM potions WHERE potions.type = :x"),[{"x": potion.potion_type}]).scalar_one()
                 connection.execute(sqlalchemy.text("""UPDATE potions SET inventory = :x
-                                                   WHERE potions.type = :y"""),[{"x": potion.quantity, "y": potion.potion_type}])
+                                                   WHERE potions.type = :y"""),[{"x": num_potions+potion.quantity, "y": potion.potion_type}])
         elif potion.potion_type == [50,0,50,0]:
             with db.engine.begin() as connection:
                 connection.execute(sqlalchemy.text("UPDATE global_inventory SET num_red_ml = :x"),[{"x": num_red_ml-50*potion.quantity}])
                 connection.execute(sqlalchemy.text("UPDATE global_inventory SET num_blue_ml = :x"),[{"x": num_blue_ml-50*potion.quantity}])
+                num_potions = connection.execute(sqlalchemy.text("SELECT inventory FROM potions WHERE potions.type = :x"),[{"x": potion.potion_type}]).scalar_one()
                 connection.execute(sqlalchemy.text("""UPDATE potions SET inventory = :x
-                                                   WHERE potions.type = :y"""),[{"x": potion.quantity, "y": potion.potion_type}])
+                                                   WHERE potions.type = :y"""),[{"x": num_potions+potion.quantity, "y": potion.potion_type}])
                 
         elif potion.potion_type == [50,0,0,50]:
             with db.engine.begin() as connection:
                 connection.execute(sqlalchemy.text("UPDATE global_inventory SET num_red_ml = :x"),[{"x": num_red_ml-50*potion.quantity}])
                 connection.execute(sqlalchemy.text("UPDATE global_inventory SET num_dark_ml = :x"),[{"x": num_dark_ml-50*potion.quantity}])
+                num_potions = connection.execute(sqlalchemy.text("SELECT inventory FROM potions WHERE potions.type = :x"),[{"x": potion.potion_type}]).scalar_one()
                 connection.execute(sqlalchemy.text("""UPDATE potions SET inventory = :x
-                                                   WHERE potions.type = :y"""),[{"x": potion.quantity, "y": potion.potion_type}])
+                                                   WHERE potions.type = :y"""),[{"x": num_potions+potion.quantity, "y": potion.potion_type}])
         elif potion.potion_type == [0,50,50,0]:
             with db.engine.begin() as connection:
                 connection.execute(sqlalchemy.text("UPDATE global_inventory SET num_green_ml = :x"),[{"x": num_green_ml-50*potion.quantity}])
                 connection.execute(sqlalchemy.text("UPDATE global_inventory SET num_blue_ml = :x"),[{"x": num_blue_ml-50*potion.quantity}])
+                num_potions = connection.execute(sqlalchemy.text("SELECT inventory FROM potions WHERE potions.type = :x"),[{"x": potion.potion_type}]).scalar_one()
                 connection.execute(sqlalchemy.text("""UPDATE potions SET inventory = :x
-                                                   WHERE potions.type = :y"""),[{"x": potion.quantity, "y": potion.potion_type}])
+                                                   WHERE potions.type = :y"""),[{"x": num_potions+potion.quantity, "y": potion.potion_type}])
                 
         elif potion.potion_type == [0,50,0,50]:
             with db.engine.begin() as connection:
                 connection.execute(sqlalchemy.text("UPDATE global_inventory SET num_green_ml = :x"),[{"x": num_green_ml-50*potion.quantity}])
                 connection.execute(sqlalchemy.text("UPDATE global_inventory SET num_dark_ml = :x"),[{"x": num_dark_ml-50*potion.quantity}])
+                num_potions = connection.execute(sqlalchemy.text("SELECT inventory FROM potions WHERE potions.type = :x"),[{"x": potion.potion_type}]).scalar_one()
                 connection.execute(sqlalchemy.text("""UPDATE potions SET inventory = :x
-                                                   WHERE potions.type = :y"""),[{"x": potion.quantity, "y": potion.potion_type}])
+                                                   WHERE potions.type = :y"""),[{"x": num_potions+potion.quantity, "y": potion.potion_type}])
         
         elif potion.potion_type == [0,0,50,50]:
             with db.engine.begin() as connection:
                 connection.execute(sqlalchemy.text("UPDATE global_inventory SET num_blue_ml = :x"),[{"x": num_blue_ml-50*potion.quantity}])
                 connection.execute(sqlalchemy.text("UPDATE global_inventory SET num_dark_ml = :x"),[{"x": num_dark_ml-50*potion.quantity}])
+                num_potions = connection.execute(sqlalchemy.text("SELECT inventory FROM potions WHERE potions.type = :x"),[{"x": potion.potion_type}]).scalar_one()
                 connection.execute(sqlalchemy.text("""UPDATE potions SET inventory = :x
-                                                   WHERE potions.type = :y"""),[{"x": potion.quantity, "y": potion.potion_type}])
+                                                   WHERE potions.type = :y"""),[{"x": num_potions+potion.quantity, "y": potion.potion_type}])
 
     return "OK"
 
@@ -88,64 +101,74 @@ def get_bottle_plan():
         num_green_ml = connection.execute(sqlalchemy.text("SELECT num_green_ml FROM global_inventory")).scalar_one()
         num_blue_ml = connection.execute(sqlalchemy.text("SELECT num_blue_ml FROM global_inventory")).scalar_one()
         num_dark_ml = connection.execute(sqlalchemy.text("SELECT num_dark_ml FROM global_inventory")).scalar_one()
-        types = connection.execute(sqlalchemy.text("SELECT id, type FROM potions"))
+        types = connection.execute(sqlalchemy.text("SELECT id, type FROM potions ORDER BY id DESC"))
+
+    
+    
 
     for row in types:
         red_quant = num_red_ml//50
         green_quant = num_green_ml//50
         blue_quant = num_blue_ml//50
         dark_quant = num_dark_ml//50
-
+        print(red_quant)
         if num_red_ml >= row.type[0] and num_green_ml >= row.type[1] and num_blue_ml >= row.type[2] and num_dark_ml >= row.type[3]:
-            if row.id == 4 and num_green_ml < 50 and num_blue_ml < 50 and num_dark_ml < 50:
+            print("HI")
+            if row.id == 4:
+                quant = num_red_ml//100
                 bottles.append({
                     "potion_type": row.type,
-                    "quantity": num_red_ml//100,
+                    "quantity": quant,
                 })
-                num_red_ml -= row.type[0]
-                print(row.type[0])
-            if row.id == 5:
+                num_red_ml -= row.type[0]*quant
+            elif row.id == 5:
+                quant = min(red_quant, green_quant)
                 bottles.append({
                     "potion_type": row.type,
-                    "quantity": min(red_quant, green_quant),
+                    "quantity": quant,
                 })
-                num_red_ml -= row.type[0]
-                num_green_ml -= row.type[1]
-            if row.id == 6:
+                num_red_ml -= row.type[0]*quant
+                num_green_ml -= row.type[1]*quant
+            elif row.id == 6:
+                quant = min(red_quant, blue_quant)
                 bottles.append({
                     "potion_type": row.type,
-                    "quantity": min(red_quant, blue_quant),
+                    "quantity": quant,
                 })
-                num_red_ml -= row.type[0]
-                num_blue_ml -= row.type[2]
-            if row.id == 7:
+                num_red_ml -= row.type[0]*quant
+                num_blue_ml -= row.type[2]*quant
+            elif row.id == 7:
+                quant = min(red_quant, dark_quant)
                 bottles.append({
                     "potion_type": row.type,
-                    "quantity": min(red_quant, dark_quant),
+                    "quantity": quant,
                 })
-                num_red_ml -= row.type[0]
-                num_dark_ml -= row.type[3]
-            if row.id == 8:
+                num_red_ml -= row.type[0]*quant
+                num_dark_ml -= row.type[3]*quant
+            elif row.id == 8:
+                quant = min(green_quant, blue_quant)
                 bottles.append({
                     "potion_type": row.type,
-                    "quantity": min(green_quant, blue_quant),
+                    "quantity": quant,
                 })
-                num_green_ml -= row.type[1]
-                num_blue_ml -= row.type[2]
-            if row.id == 9:
+                num_green_ml -= row.type[1]*quant
+                num_blue_ml -= row.type[2]*quant
+            elif row.id == 9:
+                quant = min(green_quant, dark_quant)
                 bottles.append({
                     "potion_type": row.type,
-                    "quantity": min(green_quant, dark_quant),
+                    "quantity": quant,
                 })
-                num_green_ml -= row.type[1]
-                num_dark_ml -= row.type[3]
-            if row.id == 10:
+                num_green_ml -= row.type[1]*quant
+                num_dark_ml -= row.type[3]*quant
+            elif row.id == 10:
+                quant = min(blue_quant, dark_quant)
                 bottles.append({
                     "potion_type": row.type,
-                    "quantity": min(blue_quant, dark_quant),
+                    "quantity": quant,
                 })
-                num_blue_ml -= row.type[2]
-                num_dark_ml -= row.type[3]
+                num_blue_ml -= row.type[2]*quant
+                num_dark_ml -= row.type[3]*quant
             
 
     return bottles
