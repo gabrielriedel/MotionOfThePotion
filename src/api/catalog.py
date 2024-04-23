@@ -15,13 +15,15 @@ def get_catalog():
     """
     catalog = []
     with db.engine.begin() as connection:
-        results = connection.execute(sqlalchemy.text("SELECT inventory, sku, type, price FROM potions"))
+        results = connection.execute(sqlalchemy.text("SELECT inventory, sku, name, type, price FROM potions"))
         #num_red_potions = connection.execute(sqlalchemy.text("SELECT num_red_potions FROM global_inventory")).scalar_one()
         #num_green_potions = connection.execute(sqlalchemy.text("SELECT num_green_potions FROM global_inventory")).scalar_one()
         #num_blue_potions = connection.execute(sqlalchemy.text("SELECT num_blue_potions FROM global_inventory")).scalar_one()
     
     for row in results:
-        catalog.append({"sku": row.sku, "quantity": row.inventory, "potion_type": row.type, "price": row.price})
+        catalog.append({"sku": row.sku, "name": row.name, "quantity": row.inventory, "price": row.price, "potion_type": row.type})
+    
+    return catalog
     # if num_red_potions > 0:
 
     #     return [
@@ -58,4 +60,4 @@ def get_catalog():
     #             }
     #         ]
     
-    return catalog
+    
