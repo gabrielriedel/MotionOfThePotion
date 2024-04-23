@@ -15,16 +15,18 @@ def get_catalog():
     """
     catalog = []
     with db.engine.begin() as connection:
-        results = connection.execute(sqlalchemy.text("SELECT inventory, sku, name, type, price FROM potions"))
+        results = connection.execute(sqlalchemy.text("SELECT inventory, sku, name, type, price, id FROM potions"))
     for row in results:
-        catalog.append({
-            "sku": row.sku, 
-            "name": row.name, 
-            "quantity": row.inventory,
-            "price": row.price,
-            "potion_type": row.type
-            })
-    
+
+        if row.inventory > 0 and row.id !=10:
+            catalog.append({
+                "sku": row.sku, 
+                "name": row.name, 
+                "quantity": row.inventory,
+                "price": row.price,
+                "potion_type": row.type
+                })
+            
     return catalog
     # if num_red_potions > 0:
 
