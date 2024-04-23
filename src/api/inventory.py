@@ -20,10 +20,10 @@ def get_inventory():
         num_blue_ml = connection.execute(sqlalchemy.text("SELECT num_blue_ml FROM global_inventory")).scalar_one()
         num_ml = num_red_ml + num_green_ml + num_blue_ml
 
-        num_red_potions = connection.execute(sqlalchemy.text("SELECT num_red_potions FROM global_inventory")).scalar_one()
-        num_green_potions = connection.execute(sqlalchemy.text("SELECT num_green_potions FROM global_inventory")).scalar_one()
-        num_blue_potions = connection.execute(sqlalchemy.text("SELECT num_blue_potions FROM global_inventory")).scalar_one()
-        num_potions = num_green_potions + num_red_potions + num_blue_potions
+        result = connection.execute(sqlalchemy.text("SELECT inventory FROM potions"))
+        num_potions = 0
+        for row in result:
+            num_potions += row.inventory
 
         gold = connection.execute(sqlalchemy.text("SELECT gold FROM global_inventory")).scalar_one()
 
