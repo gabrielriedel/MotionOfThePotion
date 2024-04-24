@@ -81,6 +81,31 @@ def get_wholesale_purchase_plan(wholesale_catalog: list[Barrel]):
                                                      FROM global_inventory""")).fetchone()
     inventory_data = list(results)
     for barrel in wholesale_catalog:
+        if barrel.sku == "MEDIUM_RED_BARREL" and inventory_data[0] < 5 and barrel.price <= inventory_data[4]:
+            order.append({
+            "sku": "MEDIUM_RED_BARREL",
+            "quantity": 1,
+            })  
+            inventory_data[4] -= barrel.price
+        if barrel.sku == "MEDIUM_GREEN_BARREL" and inventory_data[1] < 10 and barrel.price <= inventory_data[4]:
+            order.append({
+            "sku": "MEDIUM_GREEN_BARREL",
+            "quantity": 1,
+            })  
+            inventory_data[4] -= barrel.price
+                    
+        if barrel.sku == "MEDIUM_BLUE_BARREL" and inventory_data[2] < 10 and barrel.price <= inventory_data[4]:
+            order.append({
+            "sku": "MEDIUM_BLUE_BARREL",
+            "quantity": 1,
+            })  
+            inventory_data[4] -= barrel.price
+        if barrel.sku == "MEDIUM_DARK_BARREL" and inventory_data[3] < 10 and barrel.price <= inventory_data[4]:
+            order.append({
+            "sku": "MEDIUM_DARK_BARREL",
+            "quantity": 1,
+            })  
+            inventory_data[4] -= barrel.price
         if barrel.sku == "SMALL_RED_BARREL" and inventory_data[0] < 5 and barrel.price <= inventory_data[4]:
             order.append({
             "sku": "SMALL_RED_BARREL",
@@ -89,7 +114,7 @@ def get_wholesale_purchase_plan(wholesale_catalog: list[Barrel]):
             inventory_data[4] -= barrel.price
         if barrel.sku == "SMALL_GREEN_BARREL" and inventory_data[1] < 10 and barrel.price <= inventory_data[4]:
             order.append({
-            "sku": "MEDIUM_GREEN_BARREL",
+            "sku": "SMALL_GREEN_BARREL",
             "quantity": 1,
             })  
             inventory_data[4] -= barrel.price
