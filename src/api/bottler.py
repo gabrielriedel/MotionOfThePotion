@@ -100,25 +100,24 @@ def get_bottle_plan():
         num_green_ml = connection.execute(sqlalchemy.text("SELECT num_green_ml FROM global_inventory")).scalar_one()
         num_blue_ml = connection.execute(sqlalchemy.text("SELECT num_blue_ml FROM global_inventory")).scalar_one()
         num_dark_ml = connection.execute(sqlalchemy.text("SELECT num_dark_ml FROM global_inventory")).scalar_one()
-        types = connection.execute(sqlalchemy.text("SELECT id, type FROM potions ORDER BY id DESC"))
+        types = connection.execute(sqlalchemy.text("SELECT id, type FROM potions ORDER BY id ASC"))
 
     
     
 
     for row in types:
-        print(row.type)
         red_quant = num_red_ml//50
         green_quant = num_green_ml//50
         blue_quant = num_blue_ml//50
         dark_quant = num_dark_ml//50
         if num_red_ml >= row.type[0] and num_green_ml >= row.type[1] and num_blue_ml >= row.type[2] and num_dark_ml >= row.type[3]:
-            # if row.id == 4 and num_green_ml < 50 and num_blue_ml < 50 and num_dark_ml < 50:
-            #     quant = num_red_ml//100
-            #     bottles.append({
-            #         "potion_type": row.type,
-            #         "quantity": quant,
-            #     })
-            #     num_red_ml -= row.type[0]*quant
+            if row.id == 4 and num_green_ml < 50 and num_blue_ml < 50 and num_dark_ml < 50:
+                quant = num_red_ml//100
+                bottles.append({
+                    "potion_type": row.type,
+                    "quantity": quant,
+                })
+                num_red_ml -= row.type[0]*quant
             # elif row.id == 5:
             #     quant = min(red_quant, green_quant)
             #     bottles.append({
@@ -127,7 +126,7 @@ def get_bottle_plan():
             #     })
             #     num_red_ml -= row.type[0]*quant
             #     num_green_ml -= row.type[1]*quant
-            if row.id == 6:
+            elif row.id == 6:
                 quant = min(red_quant, blue_quant)
                 bottles.append({
                     "potion_type": row.type,
