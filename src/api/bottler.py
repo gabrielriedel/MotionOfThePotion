@@ -118,14 +118,14 @@ def get_bottle_plan():
                     "quantity": quant,
                 })
                 num_red_ml -= row.type[0]*quant
-            # elif row.id == 5:
-            #     quant = min(red_quant, green_quant)
-            #     bottles.append({
-            #         "potion_type": row.type,
-            #         "quantity": quant,
-            #     })
-            #     num_red_ml -= row.type[0]*quant
-            #     num_green_ml -= row.type[1]*quant
+            elif row.id == 5:
+                quant = min(red_quant, green_quant)
+                bottles.append({
+                    "potion_type": row.type,
+                    "quantity": quant,
+                })
+                num_red_ml -= row.type[0]*quant
+                num_green_ml -= row.type[1]*quant
             elif row.id == 6:
                 quant = min(red_quant, blue_quant)
                 bottles.append({
