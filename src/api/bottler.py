@@ -111,22 +111,22 @@ def get_bottle_plan():
         blue_quant = num_blue_ml//50
         dark_quant = num_dark_ml//50
         if num_red_ml >= row.type[0] and num_green_ml >= row.type[1] and num_blue_ml >= row.type[2] and num_dark_ml >= row.type[3]:
-            if row.id == 4 and num_green_ml < 50 and num_blue_ml < 50 and num_dark_ml < 50:
-                quant = num_red_ml//100
-                bottles.append({
-                    "potion_type": row.type,
-                    "quantity": quant,
-                })
-                num_red_ml -= row.type[0]*quant
-            elif row.id == 5:
-                quant = min(red_quant, green_quant)
-                bottles.append({
-                    "potion_type": row.type,
-                    "quantity": quant,
-                })
-                num_red_ml -= row.type[0]*quant
-                num_green_ml -= row.type[1]*quant
-            elif row.id == 6:
+            # if row.id == 4 and num_green_ml < 50 and num_blue_ml < 50 and num_dark_ml < 50:
+            #     quant = num_red_ml//100
+            #     bottles.append({
+            #         "potion_type": row.type,
+            #         "quantity": quant,
+            #     })
+            #     num_red_ml -= row.type[0]*quant
+            # elif row.id == 5:
+            #     quant = min(red_quant, green_quant)
+            #     bottles.append({
+            #         "potion_type": row.type,
+            #         "quantity": quant,
+            #     })
+            #     num_red_ml -= row.type[0]*quant
+            #     num_green_ml -= row.type[1]*quant
+            if row.id == 6:
                 quant = min(red_quant, blue_quant)
                 bottles.append({
                     "potion_type": row.type,
