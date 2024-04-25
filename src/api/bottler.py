@@ -32,10 +32,9 @@ def post_deliver_bottles(potions_delivered: list[PotionInventory], order_id: int
         if potion.potion_type == [100,0,0,0]:
             with db.engine.begin() as connection:
                 connection.execute(sqlalchemy.text("UPDATE global_inventory SET num_red_ml = :x"),[{"x": num_red_ml-100*potion.quantity}])
-                num_red_potions = connection.execute(sqlalchemy.text("SELECT num_red_potions FROM global_inventory")).scalar_one()
-                connection.execute(sqlalchemy.text("UPDATE global_inventory SET num_red_potions = :x"),[{"x": potion.quantity+num_red_potions}])
+                num_potions = connection.execute(sqlalchemy.text("SELECT inventory FROM potions WHERE potions.type = :x"),[{"x": potion.potion_type}]).scalar_one()
                 connection.execute(sqlalchemy.text("""UPDATE potions SET inventory = :x
-                                                   WHERE potions.type = :y"""),[{"x": potion.quantity+num_red_potions, "y": potion.potion_type}])
+                                                   WHERE potions.type = :y"""),[{"x": num_potions+potion.quantity, "y": potion.potion_type}])
         if potion.potion_type == [50,50,0,0]:
             with db.engine.begin() as connection:
                 connection.execute(sqlalchemy.text("UPDATE global_inventory SET num_red_ml = :x"),[{"x": num_red_ml-50*potion.quantity}])
