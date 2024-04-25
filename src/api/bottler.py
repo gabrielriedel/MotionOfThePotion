@@ -106,6 +106,7 @@ def get_bottle_plan():
     
 
     for row in types:
+        print(row.type)
         red_quant = num_red_ml//50
         green_quant = num_green_ml//50
         blue_quant = num_blue_ml//50
