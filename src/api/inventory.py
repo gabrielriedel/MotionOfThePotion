@@ -15,17 +15,23 @@ router = APIRouter(
 def get_inventory():
     """ """
     with db.engine.begin() as connection:
-        num_red_ml = connection.execute(sqlalchemy.text("SELECT num_red_ml FROM global_inventory")).scalar_one()
-        num_green_ml = connection.execute(sqlalchemy.text("SELECT num_green_ml FROM global_inventory")).scalar_one()
-        num_blue_ml = connection.execute(sqlalchemy.text("SELECT num_blue_ml FROM global_inventory")).scalar_one()
-        num_ml = num_red_ml + num_green_ml + num_blue_ml
+        num_potions = connection.execute(sqlalchemy.text("""SELECT SUM(change) AS balance
+                                                     FROM potion_ledger""")).scalar_one()
+        gold = connection.execute(sqlalchemy.text("""SELECT SUM(change) AS balance
+                                                     FROM gold_ledger""")).scalar_one()
+        num_ml = connection.execute(sqlalchemy.text("""SELECT SUM(change) AS balance
+                                                     FROM ml_ledger""")).scalar_one()
+        # num_red_ml = connection.execute(sqlalchemy.text("SELECT num_red_ml FROM global_inventory")).scalar_one()
+        # num_green_ml = connection.execute(sqlalchemy.text("SELECT num_green_ml FROM global_inventory")).scalar_one()
+        # num_blue_ml = connection.execute(sqlalchemy.text("SELECT num_blue_ml FROM global_inventory")).scalar_one()
+        # num_ml = num_red_ml + num_green_ml + num_blue_ml
 
-        result = connection.execute(sqlalchemy.text("SELECT inventory FROM potions"))
-        num_potions = 0
-        for row in result:
-            num_potions += row.inventory
+        # result = connection.execute(sqlalchemy.text("SELECT inventory FROM potions"))
+        # num_potions = 0
+        # for row in result:
+        #     num_potions += row.inventory
 
-        gold = connection.execute(sqlalchemy.text("SELECT gold FROM global_inventory")).scalar_one()
+        # gold = connection.execute(sqlalchemy.text("SELECT gold FROM global_inventory")).scalar_one()
 
     return {"number_of_potions": num_potions, "ml_in_barrels": num_ml, "gold": gold}
 
