@@ -132,21 +132,30 @@ def checkout(cart_id: int, cart_checkout: CartCheckout):
                                                      potion_sku
                                                      FROM cart_items WHERE cart_items.cart_id = :x"""),[{"x": cart_id}])
         for row in item_results:
-            with db.engine.begin() as connection:
-                price = connection.execute(sqlalchemy.text("""SELECT price 
-                                                            FROM potions
-                                                            WHERE potions.sku = :x"""),[{"x": row.potion_sku}]).scalar_one()
-                print("Gold before:", gold)
-                gold += price*row.quantity
-                connection.execute(sqlalchemy.text("UPDATE global_inventory SET gold = :x"),[{"x": gold}])
-                print("Gold after:", gold)
+            pot_type = connection.execute(sqlalchemy.text("""SELECT type 
+                                                        FROM potions
+                                                        WHERE potions.sku = :x"""),[{"x": row.potion_sku}]).scalar_one()
+            connection.execute(sqlalchemy.text("""INSERT INTO potion_ledger (potion_type, change, description) 
+                                        VALUES (:x, :y, :z)"""),
+                                        [{"x": pot_type, "y": row.quantity, "z": "Potion Sold"}])
+            price = connection.execute(sqlalchemy.text("""SELECT price 
+                                                        FROM potions
+                                                        WHERE potions.sku = :x"""),[{"x": row.potion_sku}]).scalar_one()
+            gold += price*row.quantity
+            connection.execute(sqlalchemy.text("UPDATE global_inventory SET gold = :x"),[{"x": gold}])
 
-                curr_inventory = connection.execute(sqlalchemy.text("""SELECT inventory FROM potions 
-                                                                    WHERE potions.sku = :x"""),[{"x": row.potion_sku}]).scalar_one()
-                connection.execute(sqlalchemy.text("""UPDATE potions SET inventory = :x 
-                                                   WHERE potions.sku = :y"""),[{"x": (curr_inventory - row.quantity), "y": row.potion_sku}])
+            curr_inventory = connection.execute(sqlalchemy.text("""SELECT inventory FROM potions 
+                                                                WHERE potions.sku = :x"""),[{"x": row.potion_sku}]).scalar_one()
+            connection.execute(sqlalchemy.text("""UPDATE potions SET inventory = :x 
+                                                WHERE potions.sku = :y"""),[{"x": (curr_inventory - row.quantity), "y": row.potion_sku}])
             total_potions += row.quantity
             total_gold += price*row.quantity
+        
+        connection.execute(sqlalchemy.text("""INSERT INTO gold_ledger (change, description) 
+                                           VALUES (:x, :y)"""),
+                                           [{"x":  total_gold, "y": "Barrels Purchased"}])
+        
+
   
 
     return {"total_potions_bought": total_potions, "total_gold_paid": total_gold}
