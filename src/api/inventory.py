@@ -61,5 +61,10 @@ def deliver_capacity_plan(capacity_purchase : CapacityPurchase, order_id: int):
     Start with 1 capacity for 50 potions and 1 capacity for 10000 ml of potion. Each additional 
     capacity unit costs 1000 gold.
     """
+    with db.engine.begin() as connection:
+        pot_cap = connection.execute(sqlalchemy.text("SELECT potion_cap FROM global_inventory")).scalar_one() + 1
+        connection.execute(sqlalchemy.text("UPDATE global_inventory SET potion_cap = :x"),[{"x": pot_cap}])
+        ml_cap = connection.execute(sqlalchemy.text("SELECT ml_cap FROM global_inventory")).scalar_one() + 1
+        connection.execute(sqlalchemy.text("UPDATE global_inventory SET ml_cap = :x"),[{"x": ml_cap}])
 
     return "OK"
