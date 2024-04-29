@@ -137,7 +137,7 @@ def checkout(cart_id: int, cart_checkout: CartCheckout):
                                                         WHERE potions.sku = :x"""),[{"x": row.potion_sku}]).scalar_one()
             connection.execute(sqlalchemy.text("""INSERT INTO potion_ledger (potion_type, change, description) 
                                         VALUES (:x, :y, :z)"""),
-                                        [{"x": pot_type, "y": row.quantity, "z": "Potion Sold"}])
+                                        [{"x": pot_type, "y": -row.quantity, "z": "Potion Sold"}])
             price = connection.execute(sqlalchemy.text("""SELECT price 
                                                         FROM potions
                                                         WHERE potions.sku = :x"""),[{"x": row.potion_sku}]).scalar_one()
