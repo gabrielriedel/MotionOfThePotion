@@ -150,7 +150,7 @@ def checkout(cart_id: int, cart_checkout: CartCheckout):
         
         connection.execute(sqlalchemy.text("""INSERT INTO gold_ledger (change, description) 
                                            VALUES (:x, :y)"""),
-                                           [{"x":  total_gold, "y": "Barrels Purchased"}])
+                                           [{"x":  total_gold, "y": "Potion Sold"}])
         
 
   
