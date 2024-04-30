@@ -72,14 +72,14 @@ def get_wholesale_purchase_plan(wholesale_catalog: list[Barrel]):
                 "quantity": 1,
                 })  
                 gold -= barrel.price
-            if barrel.sku == "MEDIUM_GREEN_BARREL" and red_ml > green_ml and barrel.price <= gold:
+            if barrel.sku == "MEDIUM_GREEN_BARREL" and red_ml >= green_ml and barrel.price <= gold:
                 order.append({
                 "sku": "MEDIUM_GREEN_BARREL",
                 "quantity": 1,
                 })  
                 gold -= barrel.price
                         
-            if barrel.sku == "MEDIUM_BLUE_BARREL" and red_ml > blue_ml and green_ml > blue_ml and barrel.price <= gold:
+            if barrel.sku == "MEDIUM_BLUE_BARREL" and red_ml >= blue_ml and green_ml >= blue_ml and barrel.price <= gold:
                 order.append({
                 "sku": "MEDIUM_BLUE_BARREL",
                 "quantity": 1,
@@ -97,14 +97,14 @@ def get_wholesale_purchase_plan(wholesale_catalog: list[Barrel]):
                 "quantity": 1,
                 })  
                 gold -= barrel.price
-            if barrel.sku == "SMALL_GREEN_BARREL" and red_ml > green_ml and barrel.price <= gold:
+            if barrel.sku == "SMALL_GREEN_BARREL" and red_ml >= green_ml and barrel.price <= gold:
                 order.append({
                 "sku": "SMALL_GREEN_BARREL",
                 "quantity": 1,
                 })  
                 gold -= barrel.price
                         
-            if barrel.sku == "SMALL_BLUE_BARREL" and red_ml > blue_ml and green_ml > blue_ml and barrel.price <= gold:
+            if barrel.sku == "SMALL_BLUE_BARREL" and red_ml >= blue_ml and green_ml >= blue_ml and barrel.price <= gold:
                 order.append({
                 "sku": "SMALL_BLUE_BARREL",
                 "quantity": 1,
