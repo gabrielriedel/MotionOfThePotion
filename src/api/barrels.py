@@ -31,15 +31,15 @@ def post_deliver_barrels(barrels_delivered: list[Barrel], order_id: int):
         connection.execute(sqlalchemy.text("""INSERT INTO barrel_orders (id, description) 
                                            VALUES (:x, :y)"""),
                                            [{"x": order_id, "y": "New Barrel Order"}])
-        results = connection.execute(sqlalchemy.text("""SELECT 
-                                                     num_red_ml, 
-                                                     num_green_ml, 
-                                                     num_blue_ml, 
-                                                     num_dark_ml, 
-                                                     gold 
-                                                     FROM global_inventory""")).fetchone()
+        # results = connection.execute(sqlalchemy.text("""SELECT 
+        #                                              num_red_ml, 
+        #                                              num_green_ml, 
+        #                                              num_blue_ml, 
+        #                                              num_dark_ml, 
+        #                                              gold 
+        #                                              FROM global_inventory""")).fetchone()
     
-        inventory_data = list(results)
+        #inventory_data = list(results)
         for barrel in barrels_delivered:
             connection.execute(sqlalchemy.text("""INSERT INTO barrel_order_items (sku, ml_per_barrel, potion_type, price, quantity, order_id) 
                                            VALUES (:x, :y, :z, :w, :q, :p)"""),
@@ -51,31 +51,31 @@ def post_deliver_barrels(barrels_delivered: list[Barrel], order_id: int):
             connection.execute(sqlalchemy.text("""INSERT INTO gold_ledger (change, description) 
                                            VALUES (:x, :y)"""),
                                            [{"x":  -(barrel.quantity*barrel.price), "y": "Barrels Purchased"}])
-            if barrel.potion_type == [1,0,0,0]:
-                inventory_data[0] += barrel.ml_per_barrel*barrel.quantity
-                inventory_data[4] -= barrel.price*barrel.quantity
-            elif barrel.potion_type == [0,1,0,0]:
-                inventory_data[1] += barrel.ml_per_barrel*barrel.quantity
-                inventory_data[4] -= barrel.price*barrel.quantity
-            elif barrel.potion_type == [0,0,1,0]:
-                inventory_data[2] += barrel.ml_per_barrel*barrel.quantity
-                inventory_data[4] -= barrel.price*barrel.quantity
-            elif barrel.potion_type == [0,0,0,1]:
-                inventory_data[3] += barrel.ml_per_barrel*barrel.quantity
-                inventory_data[4] -= barrel.price*barrel.quantity
-            else:
-                raise Exception("Invalid Potion Type")
+            # if barrel.potion_type == [1,0,0,0]:
+            #     inventory_data[0] += barrel.ml_per_barrel*barrel.quantity
+            #     inventory_data[4] -= barrel.price*barrel.quantity
+            # elif barrel.potion_type == [0,1,0,0]:
+            #     inventory_data[1] += barrel.ml_per_barrel*barrel.quantity
+            #     inventory_data[4] -= barrel.price*barrel.quantity
+            # elif barrel.potion_type == [0,0,1,0]:
+            #     inventory_data[2] += barrel.ml_per_barrel*barrel.quantity
+            #     inventory_data[4] -= barrel.price*barrel.quantity
+            # elif barrel.potion_type == [0,0,0,1]:
+            #     inventory_data[3] += barrel.ml_per_barrel*barrel.quantity
+            #     inventory_data[4] -= barrel.price*barrel.quantity
+            # else:
+            #     raise Exception("Invalid Potion Type")
         
         
     
     
 
-    with db.engine.begin() as connection:
-        connection.execute(sqlalchemy.text("UPDATE global_inventory SET num_red_ml = :x"),[{"x": inventory_data[0]}])
-        connection.execute(sqlalchemy.text("UPDATE global_inventory SET num_green_ml = :x"),[{"x": inventory_data[1]}])
-        connection.execute(sqlalchemy.text("UPDATE global_inventory SET num_blue_ml = :x"),[{"x": inventory_data[2]}])
-        connection.execute(sqlalchemy.text("UPDATE global_inventory SET num_dark_ml = :x"),[{"x": inventory_data[3]}])
-        connection.execute(sqlalchemy.text("UPDATE global_inventory SET gold = :x"),[{"x": inventory_data[4]}])
+    # with db.engine.begin() as connection:
+    #     connection.execute(sqlalchemy.text("UPDATE global_inventory SET num_red_ml = :x"),[{"x": inventory_data[0]}])
+    #     connection.execute(sqlalchemy.text("UPDATE global_inventory SET num_green_ml = :x"),[{"x": inventory_data[1]}])
+    #     connection.execute(sqlalchemy.text("UPDATE global_inventory SET num_blue_ml = :x"),[{"x": inventory_data[2]}])
+    #     connection.execute(sqlalchemy.text("UPDATE global_inventory SET num_dark_ml = :x"),[{"x": inventory_data[3]}])
+    #     connection.execute(sqlalchemy.text("UPDATE global_inventory SET gold = :x"),[{"x": inventory_data[4]}])
 
     return "OK"
 

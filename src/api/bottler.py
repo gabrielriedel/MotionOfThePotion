@@ -23,11 +23,6 @@ def post_deliver_bottles(potions_delivered: list[PotionInventory], order_id: int
     print(f"potions delievered: {potions_delivered} order_id: {order_id}")
     with db.engine.begin() as connection:
 
-        num_red_ml = connection.execute(sqlalchemy.text("SELECT num_red_ml FROM global_inventory")).scalar_one()
-        num_green_ml = connection.execute(sqlalchemy.text("SELECT num_green_ml FROM global_inventory")).scalar_one()
-        num_blue_ml = connection.execute(sqlalchemy.text("SELECT num_blue_ml FROM global_inventory")).scalar_one()
-        num_dark_ml = connection.execute(sqlalchemy.text("SELECT num_dark_ml FROM global_inventory")).scalar_one()
-
         for potion in potions_delivered:
             
             if potion.potion_type == [100,0,0,0]:
@@ -37,8 +32,7 @@ def post_deliver_bottles(potions_delivered: list[PotionInventory], order_id: int
                                            [{"x": potion.potion_type, "y": potion.quantity, "z": "Potion Bottled"}])
                     connection.execute(sqlalchemy.text("""INSERT INTO ml_ledger (potion_type, change, description) 
                                            VALUES (:x, :y, :z)"""),
-                                           [{"x": potion.potion_type, "y": -potion.quantity*100, "z": "Potion Bottled"}])
-                    connection.execute(sqlalchemy.text("UPDATE global_inventory SET num_red_ml = :x"),[{"x": num_red_ml-100*potion.quantity}])
+                                           [{"x": [1,0,0,0], "y": -potion.quantity*100, "z": "Potion Bottled"}])
                     num_potions = connection.execute(sqlalchemy.text("SELECT inventory FROM potions WHERE potions.type = :x"),[{"x": potion.potion_type}]).scalar_one()
                     connection.execute(sqlalchemy.text("""UPDATE potions SET inventory = :x
                                                     WHERE potions.type = :y"""),[{"x": num_potions+potion.quantity, "y": potion.potion_type}])
@@ -53,8 +47,6 @@ def post_deliver_bottles(potions_delivered: list[PotionInventory], order_id: int
                     connection.execute(sqlalchemy.text("""INSERT INTO ml_ledger (potion_type, change, description) 
                                            VALUES (:x, :y, :z)"""),
                                            [{"x": [0,1,0,0], "y": -potion.quantity*50, "z": "Potion Bottled"}])
-                    connection.execute(sqlalchemy.text("UPDATE global_inventory SET num_red_ml = :x"),[{"x": num_red_ml-50*potion.quantity}])
-                    connection.execute(sqlalchemy.text("UPDATE global_inventory SET num_green_ml = :x"),[{"x": num_green_ml-50*potion.quantity}])
                     num_potions = connection.execute(sqlalchemy.text("SELECT inventory FROM potions WHERE potions.type = :x"),[{"x": potion.potion_type}]).scalar_one()
                     connection.execute(sqlalchemy.text("""UPDATE potions SET inventory = :x
                                                     WHERE potions.type = :y"""),[{"x": num_potions+potion.quantity, "y": potion.potion_type}])
@@ -69,8 +61,6 @@ def post_deliver_bottles(potions_delivered: list[PotionInventory], order_id: int
                     connection.execute(sqlalchemy.text("""INSERT INTO ml_ledger (potion_type, change, description) 
                                            VALUES (:x, :y, :z)"""),
                                            [{"x": [0,0,1,0], "y": -potion.quantity*50, "z": "Potion Bottled"}])
-                    connection.execute(sqlalchemy.text("UPDATE global_inventory SET num_red_ml = :x"),[{"x": num_red_ml-50*potion.quantity}])
-                    connection.execute(sqlalchemy.text("UPDATE global_inventory SET num_blue_ml = :x"),[{"x": num_blue_ml-50*potion.quantity}])
                     num_potions = connection.execute(sqlalchemy.text("SELECT inventory FROM potions WHERE potions.type = :x"),[{"x": potion.potion_type}]).scalar_one()
                     connection.execute(sqlalchemy.text("""UPDATE potions SET inventory = :x
                                                     WHERE potions.type = :y"""),[{"x": num_potions+potion.quantity, "y": potion.potion_type}])
@@ -86,8 +76,6 @@ def post_deliver_bottles(potions_delivered: list[PotionInventory], order_id: int
                     connection.execute(sqlalchemy.text("""INSERT INTO ml_ledger (potion_type, change, description) 
                                            VALUES (:x, :y, :z)"""),
                                            [{"x": [0,0,0,1], "y": -potion.quantity*50, "z": "Potion Bottled"}])
-                    connection.execute(sqlalchemy.text("UPDATE global_inventory SET num_red_ml = :x"),[{"x": num_red_ml-50*potion.quantity}])
-                    connection.execute(sqlalchemy.text("UPDATE global_inventory SET num_dark_ml = :x"),[{"x": num_dark_ml-50*potion.quantity}])
                     num_potions = connection.execute(sqlalchemy.text("SELECT inventory FROM potions WHERE potions.type = :x"),[{"x": potion.potion_type}]).scalar_one()
                     connection.execute(sqlalchemy.text("""UPDATE potions SET inventory = :x
                                                     WHERE potions.type = :y"""),[{"x": num_potions+potion.quantity, "y": potion.potion_type}])
@@ -102,8 +90,6 @@ def post_deliver_bottles(potions_delivered: list[PotionInventory], order_id: int
                     connection.execute(sqlalchemy.text("""INSERT INTO ml_ledger (potion_type, change, description) 
                                            VALUES (:x, :y, :z)"""),
                                            [{"x": [0,0,1,0], "y": -potion.quantity*50, "z": "Potion Bottled"}])
-                    connection.execute(sqlalchemy.text("UPDATE global_inventory SET num_green_ml = :x"),[{"x": num_green_ml-50*potion.quantity}])
-                    connection.execute(sqlalchemy.text("UPDATE global_inventory SET num_blue_ml = :x"),[{"x": num_blue_ml-50*potion.quantity}])
                     num_potions = connection.execute(sqlalchemy.text("SELECT inventory FROM potions WHERE potions.type = :x"),[{"x": potion.potion_type}]).scalar_one()
                     connection.execute(sqlalchemy.text("""UPDATE potions SET inventory = :x
                                                     WHERE potions.type = :y"""),[{"x": num_potions+potion.quantity, "y": potion.potion_type}])
@@ -119,8 +105,6 @@ def post_deliver_bottles(potions_delivered: list[PotionInventory], order_id: int
                     connection.execute(sqlalchemy.text("""INSERT INTO ml_ledger (potion_type, change, description) 
                                            VALUES (:x, :y, :z)"""),
                                            [{"x": [0,0,0,1], "y": -potion.quantity*50, "z": "Potion Bottled"}])
-                    connection.execute(sqlalchemy.text("UPDATE global_inventory SET num_green_ml = :x"),[{"x": num_green_ml-50*potion.quantity}])
-                    connection.execute(sqlalchemy.text("UPDATE global_inventory SET num_dark_ml = :x"),[{"x": num_dark_ml-50*potion.quantity}])
                     num_potions = connection.execute(sqlalchemy.text("SELECT inventory FROM potions WHERE potions.type = :x"),[{"x": potion.potion_type}]).scalar_one()
                     connection.execute(sqlalchemy.text("""UPDATE potions SET inventory = :x
                                                     WHERE potions.type = :y"""),[{"x": num_potions+potion.quantity, "y": potion.potion_type}])
@@ -136,8 +120,6 @@ def post_deliver_bottles(potions_delivered: list[PotionInventory], order_id: int
                     connection.execute(sqlalchemy.text("""INSERT INTO ml_ledger (potion_type, change, description) 
                                            VALUES (:x, :y, :z)"""),
                                            [{"x": [0,0,0,1], "y": -potion.quantity*50, "z": "Potion Bottled"}])
-                    connection.execute(sqlalchemy.text("UPDATE global_inventory SET num_blue_ml = :x"),[{"x": num_blue_ml-50*potion.quantity}])
-                    connection.execute(sqlalchemy.text("UPDATE global_inventory SET num_dark_ml = :x"),[{"x": num_dark_ml-50*potion.quantity}])
                     num_potions = connection.execute(sqlalchemy.text("SELECT inventory FROM potions WHERE potions.type = :x"),[{"x": potion.potion_type}]).scalar_one()
                     connection.execute(sqlalchemy.text("""UPDATE potions SET inventory = :x
                                                     WHERE potions.type = :y"""),[{"x": num_potions+potion.quantity, "y": potion.potion_type}])
