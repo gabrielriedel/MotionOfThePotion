@@ -139,10 +139,6 @@ def get_bottle_plan():
 
     # Initial logic: bottle all barrels into red potions.
     with db.engine.begin() as connection:
-        # num_red_ml = connection.execute(sqlalchemy.text("SELECT num_red_ml FROM global_inventory")).scalar_one()
-        # num_green_ml = connection.execute(sqlalchemy.text("SELECT num_green_ml FROM global_inventory")).scalar_one()
-        # num_blue_ml = connection.execute(sqlalchemy.text("SELECT num_blue_ml FROM global_inventory")).scalar_one()
-        # num_dark_ml = connection.execute(sqlalchemy.text("SELECT num_dark_ml FROM global_inventory")).scalar_one()
 
         red_ml = connection.execute(sqlalchemy.text("""SELECT COALESCE(SUM(change), 0) AS red_ml
                                                      FROM ml_ledger
@@ -222,67 +218,6 @@ def get_bottle_plan():
                 })
                 blue_ml -= row.type[2]*quant
                 dark_ml -= row.type[3]*quant
-    # for row in types:
-    #     red_quant = num_red_ml//50
-    #     green_quant = num_green_ml//50
-    #     blue_quant = num_blue_ml//50
-    #     dark_quant = num_dark_ml//50
-    #     if num_red_ml >= row.type[0] and num_green_ml >= row.type[1] and num_blue_ml >= row.type[2] and num_dark_ml >= row.type[3]:
-    #         if row.id == 4 and num_green_ml < 50 and num_blue_ml < 50 and num_dark_ml < 50:
-    #             quant = num_red_ml//100
-    #             bottles.append({
-    #                 "potion_type": row.type,
-    #                 "quantity": quant,
-    #             })
-    #             num_red_ml -= row.type[0]*quant
-    #         elif row.id == 5:
-    #             quant = min(red_quant, green_quant)
-    #             bottles.append({
-    #                 "potion_type": row.type,
-    #                 "quantity": quant,
-    #             })
-    #             num_red_ml -= row.type[0]*quant
-    #             num_green_ml -= row.type[1]*quant
-    #         elif row.id == 6:
-    #             quant = min(red_quant, blue_quant)
-    #             bottles.append({
-    #                 "potion_type": row.type,
-    #                 "quantity": quant,
-    #             })
-    #             num_red_ml -= row.type[0]*quant
-    #             num_blue_ml -= row.type[2]*quant
-    #         elif row.id == 7:
-    #             quant = min(red_quant, dark_quant)
-    #             bottles.append({
-    #                 "potion_type": row.type,
-    #                 "quantity": quant,
-    #             })
-    #             num_red_ml -= row.type[0]*quant
-    #             num_dark_ml -= row.type[3]*quant
-    #         elif row.id == 8:
-    #             quant = min(green_quant, blue_quant)
-    #             bottles.append({
-    #                 "potion_type": row.type,
-    #                 "quantity": quant,
-    #             })
-    #             num_green_ml -= row.type[1]*quant
-    #             num_blue_ml -= row.type[2]*quant
-    #         elif row.id == 9:
-    #             quant = min(green_quant, dark_quant)
-    #             bottles.append({
-    #                 "potion_type": row.type,
-    #                 "quantity": quant,
-    #             })
-    #             num_green_ml -= row.type[1]*quant
-    #             num_dark_ml -= row.type[3]*quant
-    #         elif row.id == 10:
-    #             quant = min(blue_quant, dark_quant)
-    #             bottles.append({
-    #                 "potion_type": row.type,
-    #                 "quantity": quant,
-    #             })
-    #             num_blue_ml -= row.type[2]*quant
-    #             num_dark_ml -= row.type[3]*quant
             
 
     return bottles

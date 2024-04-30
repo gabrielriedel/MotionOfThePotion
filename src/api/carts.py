@@ -107,8 +107,6 @@ class CartItem(BaseModel):
 @router.post("/{cart_id}/items/{item_sku}")
 def set_item_quantity(cart_id: int, item_sku: str, cart_item: CartItem):
     """ """
-    #carts[cart_id] = (item_sku, cart_item.quantity)
-    # Add cart item info to a new row with respect to foreign keys of cart_id and item_sku
     with db.engine.begin() as connection:
         connection.execute(sqlalchemy.text("""INSERT INTO cart_items (cart_id, quantity, potion_sku)
                                         VALUES (:x, :y, :z)"""),[{"x": cart_id, "y": cart_item.quantity, "z": item_sku}]) 
@@ -123,7 +121,6 @@ def checkout(cart_id: int, cart_checkout: CartCheckout):
     """ """
     total_potions = 0
     total_gold = 0
-    # Use the info between tables to write an efficient checkout process (quantity, cost, )
     with db.engine.begin() as connection:
         gold = connection.execute(sqlalchemy.text("SELECT gold FROM global_inventory")).scalar_one()
         item_results = connection.execute(sqlalchemy.text("""SELECT 
