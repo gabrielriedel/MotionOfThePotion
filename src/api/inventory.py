@@ -68,9 +68,9 @@ def deliver_capacity_plan(capacity_purchase : CapacityPurchase, order_id: int):
     capacity unit costs 1000 gold.
     """
     with db.engine.begin() as connection:
-        pot_cap = connection.execute(sqlalchemy.text("SELECT potion_cap FROM global_inventory")).scalar_one() + 1
-        connection.execute(sqlalchemy.text("UPDATE global_inventory SET potion_cap = :x"),[{"x": pot_cap}])
-        ml_cap = connection.execute(sqlalchemy.text("SELECT ml_cap FROM global_inventory")).scalar_one() + 1
-        connection.execute(sqlalchemy.text("UPDATE global_inventory SET ml_cap = :x"),[{"x": ml_cap}])
+        pot_cap = connection.execute(sqlalchemy.text("SELECT potion_cap FROM global_inventory")).scalar_one()
+        connection.execute(sqlalchemy.text("UPDATE global_inventory SET potion_cap = :x"),[{"x": pot_cap+1}])
+        ml_cap = connection.execute(sqlalchemy.text("SELECT ml_cap FROM global_inventory")).scalar_one()
+        connection.execute(sqlalchemy.text("UPDATE global_inventory SET ml_cap = :x"),[{"x": ml_cap+1}])
 
     return "OK"
