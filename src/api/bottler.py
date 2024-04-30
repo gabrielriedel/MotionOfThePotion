@@ -36,7 +36,18 @@ def post_deliver_bottles(potions_delivered: list[PotionInventory], order_id: int
                     num_potions = connection.execute(sqlalchemy.text("SELECT inventory FROM potions WHERE potions.type = :x"),[{"x": potion.potion_type}]).scalar_one()
                     connection.execute(sqlalchemy.text("""UPDATE potions SET inventory = :x
                                                     WHERE potions.type = :y"""),[{"x": num_potions+potion.quantity, "y": potion.potion_type}])
-            if potion.potion_type == [50,50,0,0]:
+            elif potion.potion_type == [0,0,100,0]:
+                with db.engine.begin() as connection:
+                    connection.execute(sqlalchemy.text("""INSERT INTO potion_ledger (potion_type, change, description) 
+                                           VALUES (:x, :y, :z)"""),
+                                           [{"x": potion.potion_type, "y": potion.quantity, "z": "Potion Bottled"}])
+                    connection.execute(sqlalchemy.text("""INSERT INTO ml_ledger (potion_type, change, description) 
+                                           VALUES (:x, :y, :z)"""),
+                                           [{"x": [0,0,1,0], "y": -potion.quantity*100, "z": "Potion Bottled"}])
+                    num_potions = connection.execute(sqlalchemy.text("SELECT inventory FROM potions WHERE potions.type = :x"),[{"x": potion.potion_type}]).scalar_one()
+                    connection.execute(sqlalchemy.text("""UPDATE potions SET inventory = :x
+                                                    WHERE potions.type = :y"""),[{"x": num_potions+potion.quantity, "y": potion.potion_type}])
+            elif potion.potion_type == [50,50,0,0]:
                 with db.engine.begin() as connection:
                     connection.execute(sqlalchemy.text("""INSERT INTO potion_ledger (potion_type, change, description) 
                                            VALUES (:x, :y, :z)"""),
@@ -170,6 +181,13 @@ def get_bottle_plan():
                     "quantity": quant,
                 })
                 red_ml -= row.type[0]*quant
+            elif row.id == 1:
+                quant = blue_ml//100
+                bottles.append({
+                    "potion_type": row.type,
+                    "quantity": quant,
+                })
+                blue_ml -= row.type[2]*quant
             elif row.id == 5:
                 quant = min(red_quant, green_quant)
                 bottles.append({
