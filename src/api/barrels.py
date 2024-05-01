@@ -69,64 +69,64 @@ def get_wholesale_purchase_plan(wholesale_catalog: list[Barrel]):
         gold = connection.execute(sqlalchemy.text("""SELECT COALESCE(SUM(change), 0) AS gold_tot
                                                      FROM gold_ledger""")).scalar_one()
         for barrel in wholesale_catalog:
-            if barrel.sku == "LARGE_RED_BARREL" and barrel.price <= gold and num_ml+barrel.ml_per_barrel < 10000:
+            if barrel.sku == "LARGE_RED_BARREL" and barrel.price <= gold and num_ml+barrel.ml_per_barrel <= 10000:
                 order.append({
                 "sku": "LARGE_RED_BARREL",
                 "quantity": 1,
                 })  
                 gold -= barrel.price
                 num_ml += barrel.ml_per_barrel
-            if barrel.sku == "LARGE_GREEN_BARREL" and barrel.price <= gold and num_ml+barrel.ml_per_barrel < 10000:
-                order.append({
-                "sku": "LARGE_GREEN_BARREL",
-                "quantity": 1,
-                })  
-                gold -= barrel.price
-                num_ml += barrel.ml_per_barrel
+            # if barrel.sku == "LARGE_GREEN_BARREL" and barrel.price <= gold and num_ml+barrel.ml_per_barrel < 10000:
+            #     order.append({
+            #     "sku": "LARGE_GREEN_BARREL",
+            #     "quantity": 1,
+            #     })  
+            #     gold -= barrel.price
+            #     num_ml += barrel.ml_per_barrel
                         
-            if barrel.sku == "LARGE_BLUE_BARREL" and barrel.price <= gold and num_ml+barrel.ml_per_barrel < 10000:
-                order.append({
-                "sku": "LARGE_BLUE_BARREL",
-                "quantity": 1,
-                })  
-                gold -= barrel.price
-                num_ml += barrel.ml_per_barrel
-            if barrel.sku == "LARGE_DARK_BARREL" and barrel.price <= gold and num_ml+barrel.ml_per_barrel < 10000:
-                order.append({
-                "sku": "LARGE_DARK_BARREL",
-                "quantity": 1,
-                })  
-                gold -= barrel.price
-                num_ml += barrel.ml_per_barrel
-            if barrel.sku == "MEDIUM_RED_BARREL" and red_ml < 1000 and green_ml < 500 and blue_ml < 500 and dark_ml < 500 and barrel.price <= gold and num_ml+barrel.ml_per_barrel < 10000:
-                order.append({
-                "sku": "MEDIUM_RED_BARREL",
-                "quantity": 1,
-                })  
-                gold -= barrel.price
-                num_ml += barrel.ml_per_barrel
-            if barrel.sku == "MEDIUM_GREEN_BARREL" and red_ml >= green_ml and barrel.price <= gold and num_ml+barrel.ml_per_barrel < 10000:
-                order.append({
-                "sku": "MEDIUM_GREEN_BARREL",
-                "quantity": 1,
-                })  
-                gold -= barrel.price
-                num_ml += barrel.ml_per_barrel
+            # if barrel.sku == "LARGE_BLUE_BARREL" and barrel.price <= gold and num_ml+barrel.ml_per_barrel < 10000:
+            #     order.append({
+            #     "sku": "LARGE_BLUE_BARREL",
+            #     "quantity": 1,
+            #     })  
+            #     gold -= barrel.price
+            #     num_ml += barrel.ml_per_barrel
+            # if barrel.sku == "LARGE_DARK_BARREL" and barrel.price <= gold and num_ml+barrel.ml_per_barrel < 10000:
+            #     order.append({
+            #     "sku": "LARGE_DARK_BARREL",
+            #     "quantity": 1,
+            #     })  
+            #     gold -= barrel.price
+            #     num_ml += barrel.ml_per_barrel
+            # if barrel.sku == "MEDIUM_RED_BARREL" and red_ml < 1000 and green_ml < 500 and blue_ml < 500 and dark_ml < 500 and barrel.price <= gold and num_ml+barrel.ml_per_barrel < 10000:
+            #     order.append({
+            #     "sku": "MEDIUM_RED_BARREL",
+            #     "quantity": 1,
+            #     })  
+            #     gold -= barrel.price
+            #     num_ml += barrel.ml_per_barrel
+            # if barrel.sku == "MEDIUM_GREEN_BARREL" and red_ml >= green_ml and barrel.price <= gold and num_ml+barrel.ml_per_barrel < 10000:
+            #     order.append({
+            #     "sku": "MEDIUM_GREEN_BARREL",
+            #     "quantity": 1,
+            #     })  
+            #     gold -= barrel.price
+            #     num_ml += barrel.ml_per_barrel
                         
-            if barrel.sku == "MEDIUM_BLUE_BARREL" and red_ml >= blue_ml and green_ml >= blue_ml and barrel.price <= gold and num_ml+barrel.ml_per_barrel < 10000:
-                order.append({
-                "sku": "MEDIUM_BLUE_BARREL",
-                "quantity": 1,
-                })  
-                gold -= barrel.price
-                num_ml += barrel.ml_per_barrel
-            if barrel.sku == "MEDIUM_DARK_BARREL" and barrel.price <= gold and num_ml+barrel.ml_per_barrel < 10000:
-                order.append({
-                "sku": "MEDIUM_DARK_BARREL",
-                "quantity": 1,
-                })  
-                gold -= barrel.price
-                num_ml += barrel.ml_per_barrel
+            # if barrel.sku == "MEDIUM_BLUE_BARREL" and red_ml >= blue_ml and green_ml >= blue_ml and barrel.price <= gold and num_ml+barrel.ml_per_barrel < 10000:
+            #     order.append({
+            #     "sku": "MEDIUM_BLUE_BARREL",
+            #     "quantity": 1,
+            #     })  
+            #     gold -= barrel.price
+            #     num_ml += barrel.ml_per_barrel
+            # if barrel.sku == "MEDIUM_DARK_BARREL" and barrel.price <= gold and num_ml+barrel.ml_per_barrel < 10000:
+            #     order.append({
+            #     "sku": "MEDIUM_DARK_BARREL",
+            #     "quantity": 1,
+            #     })  
+            #     gold -= barrel.price
+            #     num_ml += barrel.ml_per_barrel
             # if barrel.sku == "SMALL_RED_BARREL" and red_ml < 1000 and green_ml < 500 and blue_ml < 500 and dark_ml < 500 and barrel.price <= gold and num_ml+barrel.ml_per_barrel < 10000:
             #     order.append({
             #     "sku": "SMALL_RED_BARREL",
