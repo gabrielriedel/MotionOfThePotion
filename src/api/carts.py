@@ -84,8 +84,7 @@ def post_visits(visit_id: int, customers: list[Customer]):
     print(customers)
     return "OK"
 
-#carts = {}
-#global_cart_id = 0
+
 @router.post("/")
 def create_cart(new_cart: Customer):
     """ """
@@ -122,7 +121,6 @@ def checkout(cart_id: int, cart_checkout: CartCheckout):
     total_potions = 0
     total_gold = 0
     with db.engine.begin() as connection:
-        gold = connection.execute(sqlalchemy.text("SELECT gold FROM global_inventory")).scalar_one()
         item_results = connection.execute(sqlalchemy.text("""SELECT 
                                                      cart_id, 
                                                      quantity, 
@@ -139,7 +137,6 @@ def checkout(cart_id: int, cart_checkout: CartCheckout):
                                                         FROM potions
                                                         WHERE potions.sku = :x"""),[{"x": row.potion_sku}]).scalar_one()
             gold += price*row.quantity
-            connection.execute(sqlalchemy.text("UPDATE global_inventory SET gold = :x"),[{"x": gold}])
 
             curr_inventory = connection.execute(sqlalchemy.text("""SELECT inventory FROM potions 
                                                                 WHERE potions.sku = :x"""),[{"x": row.potion_sku}]).scalar_one()
