@@ -71,7 +71,6 @@ def get_wholesale_purchase_plan(wholesale_catalog: list[Barrel]):
         ml_cap = connection.execute(sqlalchemy.text("""SELECT COALESCE(SUM(ml_cap), 0) 
                                                     FROM capacity""")).scalar_one()
         
-        # Anything with total_ml being less than 10,0000 needs to be not harcoded eventually!!!!
         for barrel in wholesale_catalog:
             if barrel.sku == "LARGE_RED_BARREL" and barrel.price <= gold and num_ml+barrel.ml_per_barrel <= ml_cap:
                 order.append({

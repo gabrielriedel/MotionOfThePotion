@@ -136,7 +136,6 @@ def checkout(cart_id: int, cart_checkout: CartCheckout):
             price = connection.execute(sqlalchemy.text("""SELECT price 
                                                         FROM potions
                                                         WHERE potions.sku = :x"""),[{"x": row.potion_sku}]).scalar_one()
-            gold += price*row.quantity
 
             curr_inventory = connection.execute(sqlalchemy.text("""SELECT inventory FROM potions 
                                                                 WHERE potions.sku = :x"""),[{"x": row.potion_sku}]).scalar_one()
