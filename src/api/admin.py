@@ -24,6 +24,8 @@ def reset():
                                            WHERE id != (SELECT MIN(id) FROM gold_ledger)"""))
         connection.execute(sqlalchemy.text("""DELETE FROM potion_ledger 
                                            WHERE id != (SELECT MIN(id) FROM potion_ledger)"""))
+        connection.execute(sqlalchemy.text("""DELETE FROM capacity 
+                                           WHERE id != (SELECT MIN(id) FROM capacity)"""))
         
         
         
