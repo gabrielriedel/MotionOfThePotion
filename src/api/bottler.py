@@ -179,7 +179,7 @@ def get_bottle_plan():
                 })
                 num_pot += min(quant,(pot_cap-num_pot))
                 red_ml -= row.type[0]*quant
-            elif row.id == 1:
+            elif row.id == 1 and green_ml<500:
                 quant = blue_ml//100
                 bottles.append({
                     "potion_type": row.type,
