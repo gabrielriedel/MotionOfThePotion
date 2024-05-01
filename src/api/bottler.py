@@ -178,8 +178,9 @@ def get_bottle_plan():
                 quant = red_ml//100
                 bottles.append({
                     "potion_type": row.type,
-                    "quantity": quant,
+                    "quantity": min(quant,50),
                 })
+                # Needs to be not hardcoded eventually!!!!!!
                 red_ml -= row.type[0]*quant
             elif row.id == 1:
                 quant = blue_ml//100
