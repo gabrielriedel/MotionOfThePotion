@@ -49,8 +49,12 @@ def post_deliver_barrels(barrels_delivered: list[Barrel], order_id: int):
 def get_wholesale_purchase_plan(wholesale_catalog: list[Barrel]):
     """ """
     order = []
+    # Sort the list by age in descending order
+    sorted_wholesale_catalog = sorted(wholesale_catalog, key=lambda barrel: barrel.ml_per_barrel, reverse=True)
+    sorted_wholesale_catalog = sorted(sorted_wholesale_catalog, key=lambda barrel: barrel.potion_type, reverse=True)
+
     
-    print(wholesale_catalog)
+    print(sorted_wholesale_catalog)
     with db.engine.begin() as connection:
         red_ml = connection.execute(sqlalchemy.text("""SELECT COALESCE(SUM(change), 0) AS red_ml
                                                      FROM ml_ledger
@@ -71,7 +75,7 @@ def get_wholesale_purchase_plan(wholesale_catalog: list[Barrel]):
         ml_cap = connection.execute(sqlalchemy.text("""SELECT COALESCE(SUM(ml_cap), 0) 
                                                     FROM capacity""")).scalar_one()
         
-        for barrel in wholesale_catalog:
+        for barrel in sorted_wholesale_catalog:
             if barrel.sku == "LARGE_RED_BARREL" and barrel.price <= gold and num_ml+barrel.ml_per_barrel <= ml_cap:
                 order.append({
                 "sku": "LARGE_RED_BARREL",
