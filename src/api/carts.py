@@ -137,10 +137,11 @@ def checkout(cart_id: int, cart_checkout: CartCheckout):
                                                         FROM potions
                                                         WHERE potions.sku = :x"""),[{"x": row.potion_sku}]).scalar_one()
 
-            curr_inventory = connection.execute(sqlalchemy.text("""SELECT inventory FROM potions 
-                                                                WHERE potions.sku = :x"""),[{"x": row.potion_sku}]).scalar_one()
+            inventory = connection.execute(sqlalchemy.text("""SELECT COALESCE(SUM(change), 0) AS potion_tot 
+                                                                FROM potion_ledger
+                                                                WHERE potion_type = :x"""),[{"x": pot_type}]).scalar_one()
             connection.execute(sqlalchemy.text("""UPDATE potions SET inventory = :x 
-                                                WHERE potions.sku = :y"""),[{"x": (curr_inventory - row.quantity), "y": row.potion_sku}])
+                                                WHERE potions.sku = :y"""),[{"x": (inventory), "y": row.potion_sku}])
             total_potions += row.quantity
             total_gold += price*row.quantity
         

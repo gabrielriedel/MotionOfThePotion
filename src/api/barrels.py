@@ -56,18 +56,18 @@ def get_wholesale_purchase_plan(wholesale_catalog: list[Barrel]):
     
     print(sorted_wholesale_catalog)
     with db.engine.begin() as connection:
-        red_ml = connection.execute(sqlalchemy.text("""SELECT COALESCE(SUM(change), 0) AS red_ml
-                                                     FROM ml_ledger
-                                                    WHERE potion_type = :x"""),[{"x": [1,0,0,0]}]).scalar_one()
-        green_ml = connection.execute(sqlalchemy.text("""SELECT COALESCE(SUM(change), 0) AS green_ml
-                                                     FROM ml_ledger
-                                                    WHERE potion_type = :x"""),[{"x": [0,1,0,0]}]).scalar_one()
-        blue_ml = connection.execute(sqlalchemy.text("""SELECT COALESCE(SUM(change), 0) AS blue_ml
-                                                     FROM ml_ledger
-                                                    WHERE potion_type = :x"""),[{"x": [0,0,1,0]}]).scalar_one()
-        dark_ml = connection.execute(sqlalchemy.text("""SELECT COALESCE(SUM(change), 0) AS dark_ml
-                                                     FROM ml_ledger
-                                                    WHERE potion_type = :x"""),[{"x": [0,0,0,1]}]).scalar_one()
+        # red_ml = connection.execute(sqlalchemy.text("""SELECT COALESCE(SUM(change), 0) AS red_ml
+        #                                              FROM ml_ledger
+        #                                             WHERE potion_type = :x"""),[{"x": [1,0,0,0]}]).scalar_one()
+        # green_ml = connection.execute(sqlalchemy.text("""SELECT COALESCE(SUM(change), 0) AS green_ml
+        #                                              FROM ml_ledger
+        #                                             WHERE potion_type = :x"""),[{"x": [0,1,0,0]}]).scalar_one()
+        # blue_ml = connection.execute(sqlalchemy.text("""SELECT COALESCE(SUM(change), 0) AS blue_ml
+        #                                              FROM ml_ledger
+        #                                             WHERE potion_type = :x"""),[{"x": [0,0,1,0]}]).scalar_one()
+        # dark_ml = connection.execute(sqlalchemy.text("""SELECT COALESCE(SUM(change), 0) AS dark_ml
+        #                                              FROM ml_ledger
+        #                                             WHERE potion_type = :x"""),[{"x": [0,0,0,1]}]).scalar_one()
         num_ml = connection.execute(sqlalchemy.text("""SELECT COALESCE(SUM(change), 0) AS ml_tot
                                                      FROM ml_ledger""")).scalar_one()
         gold = connection.execute(sqlalchemy.text("""SELECT COALESCE(SUM(change), 0) AS gold_tot
@@ -164,7 +164,7 @@ def get_wholesale_purchase_plan(wholesale_catalog: list[Barrel]):
                 })  
                 gold -= barrel.price
                 num_ml += barrel.ml_per_barrel
-        
+  
     return order
     
 
