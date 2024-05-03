@@ -170,7 +170,7 @@ def get_bottle_plan():
         green_quant = green_ml//50
         blue_quant = blue_ml//50
         dark_quant = dark_ml//50
-        if red_ml >= row.type[0] and green_ml >= row.type[1] and blue_ml >= row.type[2] and dark_ml >= row.type[3]:
+        if red_ml >= row.type[0] and green_ml >= row.type[1] and blue_ml >= row.type[2] and dark_ml >= row.type[3] and num_pot < pot_cap:
             if row.id == 4 and green_ml < 50 and blue_ml < 50 and dark_ml < 50:
                 quant = red_ml//100
                 bottles.append({
