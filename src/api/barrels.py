@@ -72,6 +72,8 @@ def get_wholesale_purchase_plan(wholesale_catalog: list[Barrel]):
                                                      FROM ml_ledger""")).scalar_one()
         gold = connection.execute(sqlalchemy.text("""SELECT COALESCE(SUM(change), 0) AS gold_tot
                                                      FROM gold_ledger""")).scalar_one()
+        gold -= 1000
+
         ml_cap = connection.execute(sqlalchemy.text("""SELECT COALESCE(SUM(ml_cap), 0) 
                                                     FROM capacity""")).scalar_one()
         
