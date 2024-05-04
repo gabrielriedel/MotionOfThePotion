@@ -56,18 +56,61 @@ def search_orders(
     time is 5 total line items.
     """
 
-    return {
-        "previous": "",
-        "next": "",
-        "results": [
-            {
-                "line_item_id": 1,
-                "item_sku": "1 oblivion potion",
-                "customer_name": "Scaramouche",
-                "line_item_total": 50,
-                "timestamp": "2021-01-01T00:00:00Z",
+    if sort_col is search_sort_options.customer_name:
+        order_by = db.search_view.c.customer_name
+    elif sort_col is search_sort_options.item_sku:
+        order_by = db.search_view.c.potion_sku
+    elif sort_col is search_sort_options.line_item_total:
+        order_by = db.search_view.c.cost
+    else:
+        order_by = db.search_view.c.created_at
+
+    if sort_order == search_sort_order.asc:
+        order_by = order_by.asc()
+    else:
+        order_by = order_by.desc()
+
+    with db.engine.begin() as connection:
+        count = connection.execute(sqlalchemy.text("""SELECT COUNT(*) FROM search_view""")).scalar_one()
+    page_num = count//5
+    offset = (page_num-1)*5
+
+    stmt = (
+        sqlalchemy.select(
+            db.search_view.c.cart_item_id,
+            db.search_view.c.customer_name,
+            db.search_view.c.potion_sku,
+            db.search_view.c.cost,
+            db.search_view.c.created_at,
+            db.search_view.c.quantity,
+        )
+        .limit(5)
+        .offset(offset)
+        .order_by(order_by)
+    )
+    if customer_name != "":
+        stmt = stmt.where(db.search_view.c.customer_name.ilike(f"%{customer_name}%"))
+    if potion_sku != "":
+        stmt = stmt.where(db.search_view.c.potion_sku.ilike(f"%{potion_sku}%"))
+
+    with db.engine.connect() as conn:
+        result = conn.execute(stmt)
+        json = []
+        for row in result:
+            json.append(
+                {
+                "line_item_id": row.cart_item_id,
+                "item_sku": f"{row.quantity} {row.potion_sku}",
+                "customer_name": row.customer_name,
+                "line_item_total": row.cost,
+                "timestamp": row.created_at,
             }
-        ],
+            )
+
+    return {
+        "previous": search_page,
+        "next": search_page,
+        "results": json,
     }
 
 
@@ -107,11 +150,14 @@ class CartItem(BaseModel):
 def set_item_quantity(cart_id: int, item_sku: str, cart_item: CartItem):
     """ """
     with db.engine.begin() as connection:
-        connection.execute(sqlalchemy.text("""INSERT INTO cart_items (cart_id, quantity, potion_sku)
-                                        VALUES (:x, :y, :z)"""),[{"x": cart_id, "y": cart_item.quantity, "z": item_sku}]) 
+        price = connection.execute(sqlalchemy.text("""SELECT price 
+                                                        FROM potions
+                                                        WHERE potions.sku = :x"""),[{"x": item_sku}]).scalar_one()
+        connection.execute(sqlalchemy.text("""INSERT INTO cart_items (cart_id, quantity, potion_sku, cost)
+                                        VALUES (:x, :y, :z, :q)"""),[{"x": cart_id, "y": cart_item.quantity, "z": item_sku, "q": price*cart_item.quantity}]) 
     return "OK"
 
-#
+
 class CartCheckout(BaseModel):
     payment: str
 
@@ -124,7 +170,8 @@ def checkout(cart_id: int, cart_checkout: CartCheckout):
         item_results = connection.execute(sqlalchemy.text("""SELECT 
                                                      cart_id, 
                                                      quantity, 
-                                                     potion_sku
+                                                     potion_sku, 
+                                                     cost 
                                                      FROM cart_items WHERE cart_items.cart_id = :x"""),[{"x": cart_id}])
         for row in item_results:
             pot_type = connection.execute(sqlalchemy.text("""SELECT type 
@@ -133,9 +180,9 @@ def checkout(cart_id: int, cart_checkout: CartCheckout):
             connection.execute(sqlalchemy.text("""INSERT INTO potion_ledger (potion_type, change, description) 
                                         VALUES (:x, :y, :z)"""),
                                         [{"x": pot_type, "y": -row.quantity, "z": "Potion Sold"}])
-            price = connection.execute(sqlalchemy.text("""SELECT price 
-                                                        FROM potions
-                                                        WHERE potions.sku = :x"""),[{"x": row.potion_sku}]).scalar_one()
+            # price = connection.execute(sqlalchemy.text("""SELECT price 
+            #                                             FROM potions
+            #                                             WHERE potions.sku = :x"""),[{"x": row.potion_sku}]).scalar_one()
 
             inventory = connection.execute(sqlalchemy.text("""SELECT COALESCE(SUM(change), 0) AS potion_tot 
                                                                 FROM potion_ledger
@@ -143,7 +190,7 @@ def checkout(cart_id: int, cart_checkout: CartCheckout):
             connection.execute(sqlalchemy.text("""UPDATE potions SET inventory = :x 
                                                 WHERE potions.sku = :y"""),[{"x": (inventory), "y": row.potion_sku}])
             total_potions += row.quantity
-            total_gold += price*row.quantity
+            total_gold += row.cost
         
         connection.execute(sqlalchemy.text("""INSERT INTO gold_ledger (change, description) 
                                            VALUES (:x, :y)"""),

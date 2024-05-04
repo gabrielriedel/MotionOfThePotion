@@ -103,3 +103,16 @@ create table
     potion_cap integer null,
     constraint capacity_pkey primary key (id)
   ) tablespace pg_default;
+
+create view
+  public.search_view as
+select
+  cart_items.created_at,
+  carts.customer_name,
+  cart_items.potion_sku,
+  cart_items.quantity,
+  cart_items.cost,
+  cart_items.id as cart_item_id
+from
+  cart_items
+  join carts on cart_items.cart_id = carts.id;
