@@ -51,7 +51,6 @@ def get_wholesale_purchase_plan(wholesale_catalog: list[Barrel]):
     order = []
     # Sort the list by age in descending order
     sorted_wholesale_catalog = sorted(wholesale_catalog, key=lambda barrel: barrel.ml_per_barrel, reverse=True)
-    sorted_wholesale_catalog = sorted(sorted_wholesale_catalog, key=lambda barrel: barrel.potion_type, reverse=True)
 
     
     print(sorted_wholesale_catalog)
