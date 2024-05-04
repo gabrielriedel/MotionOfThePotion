@@ -195,7 +195,6 @@ def get_bottle_plan():
         num_pot = connection.execute(sqlalchemy.text("""SELECT COALESCE(SUM(change), 0) AS potion_tot
                                                      FROM potion_ledger""")).scalar_one()
 
-    num_pot = 0
     for row in types:
         quant = 100000
         for i in range(len(row.type)):
