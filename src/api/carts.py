@@ -90,7 +90,7 @@ def search_orders(
             db.search_view.c.quantity,
         )
         .limit(5)
-        .offset(offset)
+        .offset(offset*5)
         .order_by(order_by)
     )
     if customer_name != "":
