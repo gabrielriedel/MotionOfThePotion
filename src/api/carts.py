@@ -70,10 +70,15 @@ def search_orders(
     else:
         order_by = order_by.desc()
 
+    if search_page == "":
+        offset = 0
+    else:
+        offset = int(search_page)
+
     with db.engine.begin() as connection:
         count = connection.execute(sqlalchemy.text("""SELECT COUNT(*) FROM search_view""")).scalar_one()
-    page_num = count//5
-    offset = (page_num-1)*5
+    
+    offset_max = count//5
 
     stmt = (
         sqlalchemy.select(
@@ -106,10 +111,18 @@ def search_orders(
                 "timestamp": row.created_at,
             }
             )
+    if offset - 1 < 0:
+        previous = ""
+    else:
+        previous = str(offset-1)
+    if offset+1 > offset_max:
+        next = ""
+    else:
+        next = str(offset+1)
 
     return {
-        "previous": search_page,
-        "next": search_page,
+        "previous": previous,
+        "next": next,
         "results": json,
     }
 
