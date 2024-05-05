@@ -80,7 +80,7 @@ def get_wholesale_purchase_plan(wholesale_catalog: list[Barrel]):
             quant = min(gold//barrel.price, barrel.quantity, (ml_cap-num_ml)//barrel.ml_per_barrel)
             # and num_ml+barrel.ml_per_barrel <= ml_cap
 
-            if barrel.sku == "LARGE_RED_BARREL" and quant > 0 and blue_ml > dark_ml:
+            if barrel.sku == "LARGE_RED_BARREL" and quant > 0 and blue_ml > red_ml:
                 order.append({
                 "sku": "LARGE_RED_BARREL",
                 "quantity": 1,
@@ -95,7 +95,7 @@ def get_wholesale_purchase_plan(wholesale_catalog: list[Barrel]):
                 gold -= barrel.price
                 num_ml += barrel.ml_per_barrel
                         
-            if barrel.sku == "LARGE_BLUE_BARREL" and quant > 0:
+            if barrel.sku == "LARGE_BLUE_BARREL" and quant > 0 and green_ml > blue_ml:
                 order.append({
                 "sku": "LARGE_BLUE_BARREL",
                 "quantity": 1,
@@ -123,7 +123,7 @@ def get_wholesale_purchase_plan(wholesale_catalog: list[Barrel]):
                 })  
                 gold -= barrel.price*quant
                 num_ml += barrel.ml_per_barrel*quant
-            if barrel.sku == "MEDIUM_GREEN_BARREL" and quant > 0 and blue_ml > green_ml:
+            if barrel.sku == "MEDIUM_GREEN_BARREL" and quant > 0:
                 order.append({
                 "sku": "MEDIUM_GREEN_BARREL",
                 "quantity": quant,
@@ -131,7 +131,7 @@ def get_wholesale_purchase_plan(wholesale_catalog: list[Barrel]):
                 gold -= barrel.price*quant
                 num_ml += barrel.ml_per_barrel*quant
                         
-            if barrel.sku == "MEDIUM_BLUE_BARREL" and quant > 0:
+            if barrel.sku == "MEDIUM_BLUE_BARREL" and quant > 0 and green_ml > blue_ml:
                 order.append({
                 "sku": "MEDIUM_BLUE_BARREL",
                 "quantity": quant,
@@ -145,7 +145,7 @@ def get_wholesale_purchase_plan(wholesale_catalog: list[Barrel]):
                 })  
                 gold -= barrel.price*quant
                 num_ml += barrel.ml_per_barrel*quant
-            if barrel.sku == "SMALL_RED_BARREL" and quant > 0:
+            if barrel.sku == "SMALL_RED_BARREL" and quant > 0 and blue_ml > red_ml and green_ml > red_ml:
                 print("HELLO")
                 order.append({
                 "sku": "SMALL_RED_BARREL",
