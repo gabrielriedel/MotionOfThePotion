@@ -71,7 +71,7 @@ def get_wholesale_purchase_plan(wholesale_catalog: list[Barrel]):
                                                      FROM ml_ledger""")).scalar_one()
         gold = connection.execute(sqlalchemy.text("""SELECT COALESCE(SUM(change), 0) AS gold_tot
                                                      FROM gold_ledger""")).scalar_one()
-        gold -= 2000
+        gold -= 4000
 
         ml_cap = connection.execute(sqlalchemy.text("""SELECT COALESCE(SUM(ml_cap), 0) 
                                                     FROM capacity""")).scalar_one()
@@ -116,7 +116,7 @@ def get_wholesale_purchase_plan(wholesale_catalog: list[Barrel]):
             #                     })  
             #     gold -= barrel.price*quant
             #     num_ml += barrel.ml_per_barrel*quant
-            if barrel.sku == "MEDIUM_RED_BARREL" and quant > 0 and blue_ml > red_ml:
+            if barrel.sku == "MEDIUM_RED_BARREL" and quant > 0 and blue_ml > red_ml and green_ml > red_ml:
                 order.append({
                 "sku": "MEDIUM_RED_BARREL",
                 "quantity": quant,
