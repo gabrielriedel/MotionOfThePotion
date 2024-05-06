@@ -79,6 +79,7 @@ def search_orders(
         count = connection.execute(sqlalchemy.text("""SELECT COUNT(*) FROM search_view""")).scalar_one()
     
     offset_max = count//5
+    print(offset_max)
 
     stmt = (
         sqlalchemy.select(
@@ -89,7 +90,7 @@ def search_orders(
             db.search_view.c.created_at,
             db.search_view.c.quantity,
         )
-        .limit(5)
+        .limit(6)
         .offset(offset*5)
         .order_by(order_by)
     )
@@ -115,7 +116,7 @@ def search_orders(
         previous = ""
     else:
         previous = str(offset-1)
-    if offset+1 > offset_max:
+    if len(json) < 6:
         next = ""
     else:
         next = str(offset+1)
@@ -123,7 +124,7 @@ def search_orders(
     return {
         "previous": previous,
         "next": next,
-        "results": json,
+        "results": json[:5],
     }
 
 
