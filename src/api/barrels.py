@@ -71,14 +71,14 @@ def get_wholesale_purchase_plan(wholesale_catalog: list[Barrel]):
                                                      FROM ml_ledger""")).scalar_one()
         gold = connection.execute(sqlalchemy.text("""SELECT COALESCE(SUM(change), 0) AS gold_tot
                                                      FROM gold_ledger""")).scalar_one()
-        gold -= 4000
 
         ml_cap = connection.execute(sqlalchemy.text("""SELECT COALESCE(SUM(ml_cap), 0) 
                                                     FROM capacity""")).scalar_one()
         
         for barrel in sorted_wholesale_catalog:
-            quant = min(gold//barrel.price, barrel.quantity, (ml_cap-num_ml)//barrel.ml_per_barrel)
+            quant = min(gold//barrel.price, barrel.quantity)
             # and num_ml+barrel.ml_per_barrel <= ml_cap
+            # , (ml_cap-num_ml)//barrel.ml_per_barrel
 
             if barrel.sku == "LARGE_RED_BARREL" and quant > 0:
                 order.append({
@@ -109,14 +109,8 @@ def get_wholesale_purchase_plan(wholesale_catalog: list[Barrel]):
                 })  
                 gold -= barrel.price
                 num_ml += barrel.ml_per_barrel
-            # elif quant > 0:
-            #     order.append({
-            #      "sku": barrel.sku,
-            #      "quantity": quant,
-            #                     })  
-            #     gold -= barrel.price*quant
-            #     num_ml += barrel.ml_per_barrel*quant
-            if barrel.sku == "MEDIUM_RED_BARREL" and quant > 0 and blue_ml > red_ml and green_ml > red_ml:
+            #and blue_ml > red_ml and green_ml > red_ml:
+            if barrel.sku == "MEDIUM_RED_BARREL" and quant > 0:
                 order.append({
                 "sku": "MEDIUM_RED_BARREL",
                 "quantity": quant,
@@ -131,7 +125,7 @@ def get_wholesale_purchase_plan(wholesale_catalog: list[Barrel]):
                 gold -= barrel.price*quant
                 num_ml += barrel.ml_per_barrel*quant
                         
-            if barrel.sku == "MEDIUM_BLUE_BARREL" and quant > 0 and green_ml > blue_ml:
+            if barrel.sku == "MEDIUM_BLUE_BARREL" and quant > 0:
                 order.append({
                 "sku": "MEDIUM_BLUE_BARREL",
                 "quantity": quant,
@@ -145,7 +139,7 @@ def get_wholesale_purchase_plan(wholesale_catalog: list[Barrel]):
                 })  
                 gold -= barrel.price*quant
                 num_ml += barrel.ml_per_barrel*quant
-            if barrel.sku == "SMALL_RED_BARREL" and quant > 0 and blue_ml > red_ml and green_ml > red_ml:
+            if barrel.sku == "SMALL_RED_BARREL" and quant > 0:
                 print("HELLO")
                 order.append({
                 "sku": "SMALL_RED_BARREL",
