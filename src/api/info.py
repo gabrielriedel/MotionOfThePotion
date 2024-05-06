@@ -17,5 +17,7 @@ def post_time(timestamp: Timestamp):
     """
     Share current time.
     """
+    print("Day:", timestamp.day)
+    print("Hour:", timestamp.hour)
     return "OK"
 
