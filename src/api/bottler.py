@@ -68,7 +68,7 @@ def get_bottle_plan():
                                                     WHERE potion_type = :x"""),[{"x": [0,0,0,1]}]).scalar_one()
         ml = [red_ml, green_ml, blue_ml, dark_ml]
         
-        types = connection.execute(sqlalchemy.text("SELECT id, type FROM potions ORDER BY id ASC"))
+        types = connection.execute(sqlalchemy.text("SELECT id, type, inventory FROM potions ORDER BY id ASC"))
 
         pot_cap = connection.execute(sqlalchemy.text("""SELECT COALESCE(SUM(potion_cap), 0) 
                                                      FROM capacity""")).scalar_one()
@@ -82,7 +82,7 @@ def get_bottle_plan():
                 quant = min(ml[i]//row.type[i], quant)
 
         quant = min(quant, (pot_cap-num_pot))
-        if num_pot < pot_cap and quant > 0:
+        if num_pot < pot_cap and quant > 0 and row.inventory <= pot_cap//2:
               bottles.append({
                      "potion_type": row.type,
                      "quantity": quant,
