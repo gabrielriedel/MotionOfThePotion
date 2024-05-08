@@ -76,7 +76,7 @@ def get_wholesale_purchase_plan(wholesale_catalog: list[Barrel]):
                                                     FROM capacity""")).scalar_one()
         
         for barrel in sorted_wholesale_catalog:
-            quant = min(gold//barrel.price, barrel.quantity)
+            quant = min(gold//barrel.price, barrel.quantity, (ml_cap-num_ml)//barrel.ml_per_barrel)
             # and num_ml+barrel.ml_per_barrel <= ml_cap
             # , (ml_cap-num_ml)//barrel.ml_per_barrel
 
