@@ -74,7 +74,9 @@ def get_wholesale_purchase_plan(wholesale_catalog: list[Barrel]):
 
         ml_cap = connection.execute(sqlalchemy.text("""SELECT COALESCE(SUM(ml_cap), 0) 
                                                     FROM capacity""")).scalar_one()
-        gold -= 2000
+        
+        if gold >= 2000:
+            gold -= 2000
         
         for barrel in sorted_wholesale_catalog:
             quant = min(gold//barrel.price, barrel.quantity, (ml_cap-num_ml)//barrel.ml_per_barrel)
