@@ -48,12 +48,12 @@ def get_capacity_plan():
         ml_cap = 0
         #num_ml >= ml_cap_quant//2 and 
 
-        if gold >= 1000 and num_potions >= pot_cap_quant//2:
-            gold -= 1000
-            pot_cap = 1
+        if gold >= 3000 and num_potions >= pot_cap_quant//2:
+            gold -= 3000
+            pot_cap = 3
         
-        if gold >= 1000 and num_ml >= ml_cap_quant//2:
-            ml_cap = 1
+        if gold >= 3000 and num_ml >= ml_cap_quant//2:
+            ml_cap = 3
         
         return {
                 "potion_capacity": pot_cap,
