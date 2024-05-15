@@ -74,7 +74,6 @@ def get_wholesale_purchase_plan(wholesale_catalog: list[Barrel]):
 
         ml_cap = connection.execute(sqlalchemy.text("""SELECT COALESCE(SUM(ml_cap), 0) 
                                                     FROM capacity""")).scalar_one()
-        ml_cap = (3*ml_cap)//4
         
         if gold >= 2000:
             gold -= 2000
@@ -83,15 +82,16 @@ def get_wholesale_purchase_plan(wholesale_catalog: list[Barrel]):
             quant = min(gold//barrel.price, barrel.quantity, (ml_cap-num_ml)//barrel.ml_per_barrel)
             # and num_ml+barrel.ml_per_barrel <= ml_cap
             # , (ml_cap-num_ml)//barrel.ml_per_barrel
-
+            print(barrel.sku)
+            print(quant)
             if barrel.sku == "LARGE_RED_BARREL" and quant > 0:
                 order.append({
                 "sku": "LARGE_RED_BARREL",
-                "quantity": 1,
+                "quantity": quant,
                 })  
                 gold -= barrel.price
-                num_ml += barrel.ml_per_barrel
-            if barrel.sku == "LARGE_GREEN_BARREL" and quant > 0 and ml_cap > 10000:
+                num_ml += barrel.ml_per_barrel*quant
+            if barrel.sku == "LARGE_GREEN_BARREL" and quant > 0 and ml_cap > 10000 and green_ml < red_ml:
                 order.append({
                 "sku": "LARGE_GREEN_BARREL",
                 "quantity": 1,
@@ -99,7 +99,7 @@ def get_wholesale_purchase_plan(wholesale_catalog: list[Barrel]):
                 gold -= barrel.price
                 num_ml += barrel.ml_per_barrel
                         
-            if barrel.sku == "LARGE_BLUE_BARREL" and quant > 0 and ml_cap > 10000:
+            if barrel.sku == "LARGE_BLUE_BARREL" and quant > 0 and ml_cap > 10000 and blue_ml < red_ml:
                 order.append({
                 "sku": "LARGE_BLUE_BARREL",
                 "quantity": 1,
