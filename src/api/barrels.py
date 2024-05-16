@@ -82,8 +82,6 @@ def get_wholesale_purchase_plan(wholesale_catalog: list[Barrel]):
             quant = min(gold//barrel.price, barrel.quantity, (ml_cap-num_ml)//barrel.ml_per_barrel)
             # and num_ml+barrel.ml_per_barrel <= ml_cap
             # , (ml_cap-num_ml)//barrel.ml_per_barrel
-            print(barrel.sku)
-            print(quant)
             if barrel.sku == "LARGE_RED_BARREL" and quant > 0:
                 order.append({
                 "sku": "LARGE_RED_BARREL",
