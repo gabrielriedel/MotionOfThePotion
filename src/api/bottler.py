@@ -82,7 +82,7 @@ def get_bottle_plan():
                 quant = min(ml[i]//row.type[i], quant)
 
         quant = min(quant, (pot_cap-num_pot))
-        if num_pot < pot_cap and quant > 0 and row.inventory <= pot_cap//4:
+        if num_pot < pot_cap and quant > 0 and row.inventory <= pot_cap//2:
               bottles.append({
                      "potion_type": row.type,
                      "quantity": quant,
