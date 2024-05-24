@@ -50,120 +50,120 @@ def get_wholesale_purchase_plan(wholesale_catalog: list[Barrel]):
     """ """
     order = []
     # Sort the list by age in descending order
-    sorted_wholesale_catalog = sorted(wholesale_catalog, key=lambda barrel: barrel.ml_per_barrel, reverse=True)
+    # sorted_wholesale_catalog = sorted(wholesale_catalog, key=lambda barrel: barrel.ml_per_barrel, reverse=True)
 
     
-    print(sorted_wholesale_catalog)
-    with db.engine.begin() as connection:
-        red_ml = connection.execute(sqlalchemy.text("""SELECT COALESCE(SUM(change), 0) AS red_ml
-                                                     FROM ml_ledger
-                                                    WHERE potion_type = :x"""),[{"x": [1,0,0,0]}]).scalar_one()
-        green_ml = connection.execute(sqlalchemy.text("""SELECT COALESCE(SUM(change), 0) AS green_ml
-                                                     FROM ml_ledger
-                                                    WHERE potion_type = :x"""),[{"x": [0,1,0,0]}]).scalar_one()
-        blue_ml = connection.execute(sqlalchemy.text("""SELECT COALESCE(SUM(change), 0) AS blue_ml
-                                                     FROM ml_ledger
-                                                    WHERE potion_type = :x"""),[{"x": [0,0,1,0]}]).scalar_one()
-        dark_ml = connection.execute(sqlalchemy.text("""SELECT COALESCE(SUM(change), 0) AS dark_ml
-                                                     FROM ml_ledger
-                                                    WHERE potion_type = :x"""),[{"x": [0,0,0,1]}]).scalar_one()
-        num_ml = connection.execute(sqlalchemy.text("""SELECT COALESCE(SUM(change), 0) AS ml_tot
-                                                     FROM ml_ledger""")).scalar_one()
-        gold = connection.execute(sqlalchemy.text("""SELECT COALESCE(SUM(change), 0) AS gold_tot
-                                                     FROM gold_ledger""")).scalar_one()
+    # print(sorted_wholesale_catalog)
+    # with db.engine.begin() as connection:
+    #     red_ml = connection.execute(sqlalchemy.text("""SELECT COALESCE(SUM(change), 0) AS red_ml
+    #                                                  FROM ml_ledger
+    #                                                 WHERE potion_type = :x"""),[{"x": [1,0,0,0]}]).scalar_one()
+    #     green_ml = connection.execute(sqlalchemy.text("""SELECT COALESCE(SUM(change), 0) AS green_ml
+    #                                                  FROM ml_ledger
+    #                                                 WHERE potion_type = :x"""),[{"x": [0,1,0,0]}]).scalar_one()
+    #     blue_ml = connection.execute(sqlalchemy.text("""SELECT COALESCE(SUM(change), 0) AS blue_ml
+    #                                                  FROM ml_ledger
+    #                                                 WHERE potion_type = :x"""),[{"x": [0,0,1,0]}]).scalar_one()
+    #     dark_ml = connection.execute(sqlalchemy.text("""SELECT COALESCE(SUM(change), 0) AS dark_ml
+    #                                                  FROM ml_ledger
+    #                                                 WHERE potion_type = :x"""),[{"x": [0,0,0,1]}]).scalar_one()
+    #     num_ml = connection.execute(sqlalchemy.text("""SELECT COALESCE(SUM(change), 0) AS ml_tot
+    #                                                  FROM ml_ledger""")).scalar_one()
+    #     gold = connection.execute(sqlalchemy.text("""SELECT COALESCE(SUM(change), 0) AS gold_tot
+    #                                                  FROM gold_ledger""")).scalar_one()
 
-        ml_cap = connection.execute(sqlalchemy.text("""SELECT COALESCE(SUM(ml_cap), 0) 
-                                                    FROM capacity""")).scalar_one()
+    #     ml_cap = connection.execute(sqlalchemy.text("""SELECT COALESCE(SUM(ml_cap), 0) 
+    #                                                 FROM capacity""")).scalar_one()
         
-        if gold >= 2000:
-            gold -= 2000
+    #     if gold >= 2000:
+    #         gold -= 2000
         
-        for barrel in sorted_wholesale_catalog:
-            quant = min(gold//barrel.price, barrel.quantity, (ml_cap-num_ml)//barrel.ml_per_barrel)
-            # and num_ml+barrel.ml_per_barrel <= ml_cap
-            # , (ml_cap-num_ml)//barrel.ml_per_barrel
-            if barrel.sku == "LARGE_RED_BARREL" and quant > 0:
-                order.append({
-                "sku": "LARGE_RED_BARREL",
-                "quantity": quant,
-                })  
-                gold -= barrel.price
-                num_ml += barrel.ml_per_barrel*quant
-            if barrel.sku == "LARGE_GREEN_BARREL" and quant > 0 and ml_cap > 10000 and green_ml < red_ml:
-                order.append({
-                "sku": "LARGE_GREEN_BARREL",
-                "quantity": 1,
-                })  
-                gold -= barrel.price
-                num_ml += barrel.ml_per_barrel
+        # for barrel in sorted_wholesale_catalog:
+        #     quant = min(gold//barrel.price, barrel.quantity, (ml_cap-num_ml)//barrel.ml_per_barrel)
+        #     # and num_ml+barrel.ml_per_barrel <= ml_cap
+        #     # , (ml_cap-num_ml)//barrel.ml_per_barrel
+        #     if barrel.sku == "LARGE_RED_BARREL" and quant > 0:
+        #         order.append({
+        #         "sku": "LARGE_RED_BARREL",
+        #         "quantity": quant,
+        #         })  
+        #         gold -= barrel.price
+        #         num_ml += barrel.ml_per_barrel*quant
+        #     if barrel.sku == "LARGE_GREEN_BARREL" and quant > 0 and ml_cap > 10000 and green_ml < red_ml:
+        #         order.append({
+        #         "sku": "LARGE_GREEN_BARREL",
+        #         "quantity": 1,
+        #         })  
+        #         gold -= barrel.price
+        #         num_ml += barrel.ml_per_barrel
                         
-            if barrel.sku == "LARGE_BLUE_BARREL" and quant > 0 and ml_cap > 10000 and blue_ml < red_ml:
-                order.append({
-                "sku": "LARGE_BLUE_BARREL",
-                "quantity": 1,
-                })  
-                gold -= barrel.price
-                num_ml += barrel.ml_per_barrel
-            # if barrel.sku == "LARGE_DARK_BARREL" and quant > 0:
-            #     order.append({
-            #     "sku": "LARGE_DARK_BARREL",
-            #     "quantity": 1,
-            #     })  
-            #     gold -= barrel.price
-            #     num_ml += barrel.ml_per_barrel
-            #and blue_ml > red_ml and green_ml > red_ml:
-            if barrel.sku == "MEDIUM_RED_BARREL" and quant > 0 and red_ml <= ml_cap//2:
-                order.append({
-                "sku": "MEDIUM_RED_BARREL",
-                "quantity": quant,
-                })  
-                gold -= barrel.price*quant
-                num_ml += barrel.ml_per_barrel*quant
-            if barrel.sku == "MEDIUM_GREEN_BARREL" and quant > 0 and green_ml <= ml_cap//4:
-                order.append({
-                "sku": "MEDIUM_GREEN_BARREL",
-                "quantity": quant,
-                })  
-                gold -= barrel.price*quant
-                num_ml += barrel.ml_per_barrel*quant
+        #     if barrel.sku == "LARGE_BLUE_BARREL" and quant > 0 and ml_cap > 10000 and blue_ml < red_ml:
+        #         order.append({
+        #         "sku": "LARGE_BLUE_BARREL",
+        #         "quantity": 1,
+        #         })  
+        #         gold -= barrel.price
+        #         num_ml += barrel.ml_per_barrel
+        #     # if barrel.sku == "LARGE_DARK_BARREL" and quant > 0:
+        #     #     order.append({
+        #     #     "sku": "LARGE_DARK_BARREL",
+        #     #     "quantity": 1,
+        #     #     })  
+        #     #     gold -= barrel.price
+        #     #     num_ml += barrel.ml_per_barrel
+        #     #and blue_ml > red_ml and green_ml > red_ml:
+        #     if barrel.sku == "MEDIUM_RED_BARREL" and quant > 0 and red_ml <= ml_cap//2:
+        #         order.append({
+        #         "sku": "MEDIUM_RED_BARREL",
+        #         "quantity": quant,
+        #         })  
+        #         gold -= barrel.price*quant
+        #         num_ml += barrel.ml_per_barrel*quant
+        #     if barrel.sku == "MEDIUM_GREEN_BARREL" and quant > 0 and green_ml <= ml_cap//4:
+        #         order.append({
+        #         "sku": "MEDIUM_GREEN_BARREL",
+        #         "quantity": quant,
+        #         })  
+        #         gold -= barrel.price*quant
+        #         num_ml += barrel.ml_per_barrel*quant
                         
-            if barrel.sku == "MEDIUM_BLUE_BARREL" and quant > 0:
-                order.append({
-                "sku": "MEDIUM_BLUE_BARREL",
-                "quantity": quant,
-                })  
-                gold -= barrel.price*quant
-                num_ml += barrel.ml_per_barrel*quant
-            # if barrel.sku == "MEDIUM_DARK_BARREL" and quant > 0:
-            #     order.append({
-            #     "sku": "MEDIUM_DARK_BARREL",
-            #     "quantity": quant,
-            #     })  
-            #     gold -= barrel.price*quant
-            #     num_ml += barrel.ml_per_barrel*quant
-            if barrel.sku == "SMALL_RED_BARREL" and quant > 0 and red_ml <= ml_cap//2:
-                print("HELLO")
-                order.append({
-                "sku": "SMALL_RED_BARREL",
-                "quantity": quant,
-                })  
-                gold -= barrel.price*quant
-                num_ml += barrel.ml_per_barrel*quant
-            if barrel.sku == "SMALL_GREEN_BARREL" and quant > 0 and  green_ml <= ml_cap//4:
-                order.append({
-                "sku": "SMALL_GREEN_BARREL",
-                "quantity": quant,
-                })  
-                gold -= barrel.price*quant
-                num_ml += barrel.ml_per_barrel*quant
+        #     if barrel.sku == "MEDIUM_BLUE_BARREL" and quant > 0:
+        #         order.append({
+        #         "sku": "MEDIUM_BLUE_BARREL",
+        #         "quantity": quant,
+        #         })  
+        #         gold -= barrel.price*quant
+        #         num_ml += barrel.ml_per_barrel*quant
+        #     # if barrel.sku == "MEDIUM_DARK_BARREL" and quant > 0:
+        #     #     order.append({
+        #     #     "sku": "MEDIUM_DARK_BARREL",
+        #     #     "quantity": quant,
+        #     #     })  
+        #     #     gold -= barrel.price*quant
+        #     #     num_ml += barrel.ml_per_barrel*quant
+        #     if barrel.sku == "SMALL_RED_BARREL" and quant > 0 and red_ml <= ml_cap//2:
+        #         print("HELLO")
+        #         order.append({
+        #         "sku": "SMALL_RED_BARREL",
+        #         "quantity": quant,
+        #         })  
+        #         gold -= barrel.price*quant
+        #         num_ml += barrel.ml_per_barrel*quant
+        #     if barrel.sku == "SMALL_GREEN_BARREL" and quant > 0 and  green_ml <= ml_cap//4:
+        #         order.append({
+        #         "sku": "SMALL_GREEN_BARREL",
+        #         "quantity": quant,
+        #         })  
+        #         gold -= barrel.price*quant
+        #         num_ml += barrel.ml_per_barrel*quant
                         
-            if barrel.sku == "SMALL_BLUE_BARREL" and quant > 0:
-                order.append({
-                "sku": "SMALL_BLUE_BARREL",
-                "quantity": quant,
-                })  
-                gold -= barrel.price*quant
-                num_ml += barrel.ml_per_barrel*quant
+        #     if barrel.sku == "SMALL_BLUE_BARREL" and quant > 0:
+        #         order.append({
+        #         "sku": "SMALL_BLUE_BARREL",
+        #         "quantity": quant,
+        #         })  
+        #         gold -= barrel.price*quant
+        #         num_ml += barrel.ml_per_barrel*quant
             # if barrel.sku == "SMALL_DARK_BARREL" and quant > 0 :
             #     order.append({
             #     "sku": "SMALL_DARK_BARREL",
